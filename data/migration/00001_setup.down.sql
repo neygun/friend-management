@@ -1,4 +1,2 @@
-drop table if exists "user";
-drop table if exists "friend";
-drop table if exists "subscribe";
-drop table if exists "block";
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS relationship;
