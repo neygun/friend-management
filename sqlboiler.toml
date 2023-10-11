@@ -1,0 +1,13 @@
+output   = "internal/repository/ormmodel"
+wipe     = true
+no-tests = true
+add-enum-types = true
+
+[psql]
+  dbname = "fm-pg"
+  host   = "localhost"
+  port   = 5432
+  user   = "postgres"
+  pass   = "postgres"
+  sslmode = "disable"
+  blacklist = ["schema_migrations"]
