@@ -5,6 +5,11 @@ go 1.21.1
 require github.com/lib/pq v1.10.9
 
 require (
+	github.com/ericlagergren/decimal v0.0.0-20190420051523-6335edbaa640 // indirect
+	github.com/volatiletech/null v8.0.0+incompatible // indirect
+)
+
+require (
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver/v3 v3.1.1 // indirect
 	github.com/Masterminds/sprig/v3 v3.2.2 // indirect
@@ -35,6 +40,7 @@ require (
 	github.com/volatiletech/inflect v0.0.1 // indirect
 	github.com/volatiletech/null/v8 v8.1.2 // indirect
 	github.com/volatiletech/randomize v0.0.1 // indirect
+	github.com/volatiletech/sqlboiler v3.7.1+incompatible
 	github.com/volatiletech/sqlboiler/v4 v4.15.0 // indirect
 	github.com/volatiletech/strmangle v0.0.5 // indirect
 	golang.org/x/crypto v0.0.0-20220826181053-bd7e27e6170d // indirect
