@@ -1,4 +1,4 @@
-package relationship
+package user
 
 import (
 	"context"
@@ -9,23 +9,22 @@ import (
 	"github.com/sony/sonyflake"
 )
 
-type RelationshipRepository interface {
-	FriendConnectionExists(ctx context.Context, user1 model.User, user2 model.User) (bool, error)
-	BlockExists(ctx context.Context, requestor model.User, target model.User) (bool, error)
+type UserRepository interface {
+	GetUsers(ctx context.Context, userFilter UserFilter) ([]model.User, error)
 }
 
-type relationshipRepository struct {
+type userRepository struct {
 	db    *sql.DB
 	idsnf *sonyflake.Sonyflake
 }
 
-func New(db *sql.DB) RelationshipRepository {
+func New(db *sql.DB) UserRepository {
 	flake := sonyflake.NewSonyflake(sonyflake.Settings{})
 	if flake == nil {
 		fmt.Printf("Couldn't generate sonyflake.NewSonyflake. Doesn't work on Go Playground due to fake time.\n")
 	}
 
-	return relationshipRepository{
+	return userRepository{
 		db:    db,
 		idsnf: flake,
 	}

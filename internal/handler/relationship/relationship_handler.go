@@ -1,9 +1,15 @@
 package relationship
 
 import (
-	service "github.com/neygun/friend-management/internal/service/user"
+	"github.com/neygun/friend-management/internal/service/relationship"
 )
 
 type RelationshipHandler struct {
-	userService service.UserService
+	relationshipService relationship.RelationshipService
+}
+
+func New(relationshipService relationship.RelationshipService) RelationshipHandler {
+	return RelationshipHandler{
+		relationshipService: relationshipService,
+	}
 }
