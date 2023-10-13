@@ -3,7 +3,6 @@ package relationship
 import (
 	"context"
 	"fmt"
-	"strconv"
 
 	"github.com/neygun/friend-management/internal/model"
 	"github.com/neygun/friend-management/internal/repository/ormmodel"
@@ -17,17 +16,16 @@ import (
 func (r relationshipRepository) FriendConnectionExists(ctx context.Context, user1 model.User, user2 model.User) (bool, error) {
 	qms := []qm.QueryMod{
 		ormmodel.RelationshipWhere.Type.EQ("friend"),
-		qm.And(fmt.Sprintf("(%s = %s AND %s = %s) OR (%s = %s AND %s = %s)",
-			ormmodel.RelationshipColumns.RequestorID, strconv.Itoa(int(user1.ID)), ormmodel.RelationshipColumns.TargetID, strconv.Itoa(int(user2.ID)),
-			ormmodel.RelationshipColumns.RequestorID, strconv.Itoa(int(user2.ID)), ormmodel.RelationshipColumns.TargetID, strconv.Itoa(int(user1.ID)),
-		)),
+		qm.And(fmt.Sprintf("(%s = ? AND %s = ?) OR (%s = ? AND %s = ?)",
+			ormmodel.RelationshipColumns.RequestorID,
+			ormmodel.RelationshipColumns.TargetID,
+			ormmodel.RelationshipColumns.RequestorID,
+			ormmodel.RelationshipColumns.TargetID,
+		), user1.ID, user2.ID, user2.ID, user1.ID),
 	}
 	exists, err := ormmodel.Relationships(qms...).Exists(ctx, r.db)
-	if err != nil {
-		return false, err
-	}
 
-	return exists, nil
+	return exists, err
 
 	// exists, err := ormmodel.Relationships(qm.Where(qm.Expr(
 	// 	ormmodel.RelationshipWhere.RequestorID.EQ(user1.ID),

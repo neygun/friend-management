@@ -1,7 +1,8 @@
-package relationship
+package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/neygun/friend-management/internal/model"
@@ -17,10 +18,19 @@ func (e HandlerErr) Error() string {
 	return e.Description
 }
 
-func convertErr(err error) error {
+func ConvertErr(err error) error {
 	switch err {
 	case relationship.ErrInvalidUsersLength:
-		// Add more expected error
+		return HandlerErr{
+			Code:        http.StatusBadRequest,
+			Description: err.Error(),
+		}
+	case relationship.ErrFriendConnectionExists:
+		return HandlerErr{
+			Code:        http.StatusBadRequest,
+			Description: err.Error(),
+		}
+	case relationship.ErrBlockExists:
 		return HandlerErr{
 			Code:        http.StatusBadRequest,
 			Description: err.Error(),
@@ -41,7 +51,7 @@ func ErrHandler(handlerFunc func(w http.ResponseWriter, r *http.Request) error) 
 					Code:        herr.Code,
 					Description: herr.Description,
 				})
-				// log
+				log.Println(err.Error())
 
 				return
 			}
@@ -52,6 +62,7 @@ func ErrHandler(handlerFunc func(w http.ResponseWriter, r *http.Request) error) 
 				Code:        http.StatusInternalServerError,
 				Description: "Internal Server Error",
 			})
+			log.Println(err.Error())
 		}
 	}
 }
