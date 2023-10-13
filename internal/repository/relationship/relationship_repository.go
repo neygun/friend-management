@@ -12,6 +12,7 @@ import (
 type RelationshipRepository interface {
 	FriendConnectionExists(ctx context.Context, user1 model.User, user2 model.User) (bool, error)
 	BlockExists(ctx context.Context, requestor model.User, target model.User) (bool, error)
+	CreateFriendConnection(ctx context.Context, user1 model.User, user2 model.User) (model.Relationship, error)
 }
 
 type relationshipRepository struct {

@@ -11,6 +11,7 @@ import (
 
 type UserRepository interface {
 	GetUsers(ctx context.Context, userFilter UserFilter) ([]model.User, error)
+	CreateUser(ctx context.Context, user model.User) (model.User, error)
 }
 
 type userRepository struct {

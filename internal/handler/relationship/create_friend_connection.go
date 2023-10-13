@@ -14,17 +14,18 @@ type FriendConnectionRequest struct {
 }
 
 func (h RelationshipHandler) CreateFriendConnection() http.HandlerFunc {
-	return ErrHandler(func(w http.ResponseWriter, r *http.Request) error {
+	return handler.ErrHandler(func(w http.ResponseWriter, r *http.Request) error {
 		var req FriendConnectionRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			return HandlerErr{
+			return handler.HandlerErr{
 				Code:        http.StatusBadRequest,
 				Description: "Invalid JSON request",
 			}
 		}
 
+		// check if number of emails = 2
 		if len(req.Friends) != 2 {
-			return HandlerErr{
+			return handler.HandlerErr{
 				Code:        http.StatusBadRequest,
 				Description: "The number of emails must be 2",
 			}
@@ -33,7 +34,7 @@ func (h RelationshipHandler) CreateFriendConnection() http.HandlerFunc {
 		// check valid emails
 		for _, v := range req.Friends {
 			if !handler.IsEmail(v) {
-				return HandlerErr{
+				return handler.HandlerErr{
 					Code:        http.StatusBadRequest,
 					Description: "Invalid email",
 				}
@@ -43,12 +44,11 @@ func (h RelationshipHandler) CreateFriendConnection() http.HandlerFunc {
 		if _, err := h.relationshipService.CreateFriendConnection(r.Context(), relationship.FriendConnectionInput{
 			Friends: req.Friends,
 		}); err != nil {
-			return convertErr(err)
+			return handler.ConvertErr(err)
 		}
 
-		json.NewEncoder(w).Encode(model.Response{
-			Code:        http.StatusOK,
-			Description: "success",
+		json.NewEncoder(w).Encode(model.SuccessResponse{
+			Success: true,
 		})
 
 		return nil

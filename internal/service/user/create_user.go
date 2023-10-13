@@ -7,5 +7,5 @@ import (
 )
 
 func (s userService) CreateUser(ctx context.Context, user model.User) (model.User, error) {
-	return model.User{}, nil
+	return s.userRepo.CreateUser(ctx, user)
 }
