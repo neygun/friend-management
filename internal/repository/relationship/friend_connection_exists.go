@@ -9,7 +9,7 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-// FriendConnectionExists
+// FriendConnectionExists checks if a friend connection between 2 users exists
 // sql query: SELECT * FROM relationship WHERE type="friend" AND ((requestor_id=user1.ID AND target_id=user2.id)
 //
 //	OR (requestor_id=user2.ID AND target_id=user1.id))
@@ -26,16 +26,4 @@ func (r relationshipRepository) FriendConnectionExists(ctx context.Context, user
 	exists, err := ormmodel.Relationships(qms...).Exists(ctx, r.db)
 
 	return exists, err
-
-	// exists, err := ormmodel.Relationships(qm.Where(qm.Expr(
-	// 	ormmodel.RelationshipWhere.RequestorID.EQ(user1.ID),
-	// 	qm.And(ormmodel.RelationshipWhere.TargetID.EQ(user2.ID)),
-	// 	qm.And(ormmodel.RelationshipWhere.Type.EQ("friend")),
-	// ),
-	// 	qm.Or2(qm.Expr(
-	// 		ormmodel.RelationshipWhere.RequestorID.EQ(user2.ID),
-	// 		qm.And(ormmodel.RelationshipWhere.TargetID.EQ(user1.ID)),
-	// 		qm.And(ormmodel.RelationshipWhere.Type.EQ("friend")),
-	// 	)),
-	// )).Exists(ctx, db)
 }

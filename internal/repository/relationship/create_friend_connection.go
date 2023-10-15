@@ -8,6 +8,7 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
+// CreateFriendConnection creates a friend connection between 2 users in db
 func (r relationshipRepository) CreateFriendConnection(ctx context.Context, user1 model.User, user2 model.User) (model.Relationship, error) {
 	newID, err := r.idsnf.NextID()
 	if err != nil {

@@ -9,6 +9,7 @@ import (
 	"github.com/sony/sonyflake"
 )
 
+// UserRepository represents user repository
 type UserRepository interface {
 	GetUsers(ctx context.Context, userFilter UserFilter) ([]model.User, error)
 	CreateUser(ctx context.Context, user model.User) (model.User, error)
@@ -19,6 +20,7 @@ type userRepository struct {
 	idsnf *sonyflake.Sonyflake
 }
 
+// New instantiates a UserRepository
 func New(db *sql.DB) UserRepository {
 	flake := sonyflake.NewSonyflake(sonyflake.Settings{})
 	if flake == nil {

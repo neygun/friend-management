@@ -9,15 +9,18 @@ import (
 	"github.com/neygun/friend-management/internal/service/relationship"
 )
 
+// HandlerErr represents errors that are not server errors
 type HandlerErr struct {
 	Code        int
 	Description string
 }
 
+// Error implemented
 func (e HandlerErr) Error() string {
 	return e.Description
 }
 
+// ConvertErr converts service errors to handler errors
 func ConvertErr(err error) error {
 	switch err {
 	case relationship.ErrInvalidUsersLength:
@@ -40,6 +43,7 @@ func ConvertErr(err error) error {
 	}
 }
 
+// ErrHandler handles errors from handler methods and responses JSON
 func ErrHandler(handlerFunc func(w http.ResponseWriter, r *http.Request) error) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := handlerFunc(w, r); err != nil {

@@ -9,15 +9,22 @@ import (
 )
 
 var (
-	ErrInvalidUsersLength     = errors.New("the number of users must be 2")
+	// ErrInvalidUsersLength occurs when the number of users returned from GetUsers is not 2
+	ErrInvalidUsersLength = errors.New("the number of users must be 2")
+
+	// ErrFriendConnectionExists occurs when there is a friend connection between 2 users
 	ErrFriendConnectionExists = errors.New("friend connection exists")
-	ErrBlockExists            = errors.New("blocking relationship exists")
+
+	// ErrFriendConnectionExists occurs when there is a blocking relationship between 2 users
+	ErrBlockExists = errors.New("blocking relationship exists")
 )
 
+// FriendConnectionInput represents the input from request to create friend connection
 type FriendConnectionInput struct {
 	Friends []string
 }
 
+// CreateFriendConnection gets 2 users from input and create a friend connection between them
 func (s relationshipService) CreateFriendConnection(ctx context.Context, friendConnInput FriendConnectionInput) (model.Relationship, error) {
 	// get users by emails
 	users, err := s.userRepo.GetUsers(ctx, user.UserFilter{Emails: friendConnInput.Friends})

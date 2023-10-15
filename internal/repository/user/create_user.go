@@ -8,6 +8,7 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
+// CreateUser creates a user in db
 func (r userRepository) CreateUser(ctx context.Context, user model.User) (model.User, error) {
 	newID, err := r.idsnf.NextID()
 	if err != nil {

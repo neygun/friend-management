@@ -10,10 +10,12 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
+// UserFilter defines filtering options for user repo methods
 type UserFilter struct {
 	Emails []string
 }
 
+// GetUsers gets users by emails
 func (r userRepository) GetUsers(ctx context.Context, userFilter UserFilter) ([]model.User, error) {
 	var qms []qm.QueryMod
 

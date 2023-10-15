@@ -8,6 +8,7 @@ import (
 	"github.com/neygun/friend-management/internal/repository/user"
 )
 
+// RelationshipService represents relationship service
 type RelationshipService interface {
 	CreateFriendConnection(ctx context.Context, friendConnReq FriendConnectionInput) (model.Relationship, error)
 }
@@ -17,6 +18,7 @@ type relationshipService struct {
 	relationshipRepo relationship.RelationshipRepository
 }
 
+// New instantiates a RelationshipService
 func New(userRepo user.UserRepository, relationshipRepo relationship.RelationshipRepository) RelationshipService {
 	return relationshipService{
 		userRepo:         userRepo,

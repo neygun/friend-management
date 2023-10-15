@@ -9,10 +9,12 @@ import (
 	"github.com/neygun/friend-management/internal/service/relationship"
 )
 
+// FriendConnectionRequest matches JSON request to create a friend connection
 type FriendConnectionRequest struct {
 	Friends []string
 }
 
+// CreateFriendConnection handles requests to create friend connection
 func (h RelationshipHandler) CreateFriendConnection() http.HandlerFunc {
 	return handler.ErrHandler(func(w http.ResponseWriter, r *http.Request) error {
 		var req FriendConnectionRequest
