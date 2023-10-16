@@ -23,7 +23,7 @@ func (e HandlerErr) Error() string {
 // ConvertErr converts service errors to handler errors
 func ConvertErr(err error) error {
 	switch err {
-	case relationship.ErrInvalidUsersLength:
+	case relationship.ErrUserNotFound:
 		return HandlerErr{
 			Code:        http.StatusBadRequest,
 			Description: err.Error(),

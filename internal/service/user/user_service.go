@@ -7,18 +7,18 @@ import (
 	"github.com/neygun/friend-management/internal/repository/user"
 )
 
-// UserService represents user service
-type UserService interface {
+// Service represents user service
+type Service interface {
 	CreateUser(ctx context.Context, user model.User) (model.User, error)
 }
 
-type userService struct {
-	userRepo user.UserRepository
+type service struct {
+	userRepo user.Repository
 }
 
-// New instantiates a UserService
-func New(userRepo user.UserRepository) UserService {
-	return userService{
+// New instantiates a user service
+func New(userRepo user.Repository) Service {
+	return service{
 		userRepo: userRepo,
 	}
 }

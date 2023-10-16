@@ -11,12 +11,12 @@ import (
 
 // BlockExists checks if requestor blocks target when creating blocking relationship
 // sql query: SELECT * FROM relationship WHERE requestor_id=requestor.ID AND target_id=target.ID AND type="block"
-func (r relationshipRepository) BlockExists(ctx context.Context, requestor model.User, target model.User) (bool, error) {
+func (r repository) BlockExists(ctx context.Context, requestor model.User, target model.User, relationshipType model.RelationshipType) (bool, error) {
 	exists, err := ormmodel.Relationships(
 		qm.Where(fmt.Sprintf("%s = ? AND %s = ? AND %s = ?",
 			ormmodel.RelationshipColumns.RequestorID,
 			ormmodel.RelationshipColumns.TargetID,
-			ormmodel.RelationshipColumns.Type), requestor.ID, target.ID, "block"),
+			ormmodel.RelationshipColumns.Type), requestor.ID, target.ID, relationshipType.ToString()),
 	).Exists(ctx, r.db)
 
 	return exists, err

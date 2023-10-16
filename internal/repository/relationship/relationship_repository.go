@@ -3,32 +3,35 @@ package relationship
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
 	"github.com/neygun/friend-management/internal/model"
 	"github.com/sony/sonyflake"
 )
 
-// RelationshipRepository represents relationship repository
-type RelationshipRepository interface {
-	FriendConnectionExists(ctx context.Context, user1 model.User, user2 model.User) (bool, error)
-	BlockExists(ctx context.Context, requestor model.User, target model.User) (bool, error)
-	CreateFriendConnection(ctx context.Context, user1 model.User, user2 model.User) (model.Relationship, error)
+// Repository represents relationship repository
+type Repository interface {
+	FriendConnectionExists(ctx context.Context, user1 model.User, user2 model.User, relationshipType model.RelationshipType) (bool, error)
+
+	BlockExists(ctx context.Context, requestor model.User, target model.User, relationshipType model.RelationshipType) (bool, error)
+
+	CreateFriendConnection(ctx context.Context, user1 model.User, user2 model.User, relationshipType model.RelationshipType) (model.Relationship, error)
+
+	Save(ctx context.Context, user1 model.User, user2 model.User, relationshipType model.RelationshipType) (model.Relationship, error)
 }
 
-type relationshipRepository struct {
+type repository struct {
 	db    *sql.DB
 	idsnf *sonyflake.Sonyflake
 }
 
-// New instantiates a RelationshipRepository
-func New(db *sql.DB) RelationshipRepository {
+// New instantiates a relationship repository
+func New(db *sql.DB) Repository {
 	flake := sonyflake.NewSonyflake(sonyflake.Settings{})
 	if flake == nil {
-		fmt.Printf("Couldn't generate sonyflake.NewSonyflake. Doesn't work on Go Playground due to fake time.\n")
+		panic("Couldn't generate sonyflake.NewSonyflake")
 	}
 
-	return relationshipRepository{
+	return repository{
 		db:    db,
 		idsnf: flake,
 	}

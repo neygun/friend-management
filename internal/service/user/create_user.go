@@ -7,6 +7,6 @@ import (
 )
 
 // CreateUser creates a user
-func (s userService) CreateUser(ctx context.Context, user model.User) (model.User, error) {
+func (s service) CreateUser(ctx context.Context, user model.User) (model.User, error) {
 	return s.userRepo.CreateUser(ctx, user)
 }

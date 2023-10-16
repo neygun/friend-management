@@ -8,19 +8,19 @@ import (
 	"github.com/neygun/friend-management/internal/repository/user"
 )
 
-// RelationshipService represents relationship service
-type RelationshipService interface {
+// Service represents relationship service
+type Service interface {
 	CreateFriendConnection(ctx context.Context, friendConnReq FriendConnectionInput) (model.Relationship, error)
 }
 
-type relationshipService struct {
-	userRepo         user.UserRepository
-	relationshipRepo relationship.RelationshipRepository
+type service struct {
+	userRepo         user.Repository
+	relationshipRepo relationship.Repository
 }
 
-// New instantiates a RelationshipService
-func New(userRepo user.UserRepository, relationshipRepo relationship.RelationshipRepository) RelationshipService {
-	return relationshipService{
+// New instantiates a relationship service
+func New(userRepo user.Repository, relationshipRepo relationship.Repository) Service {
+	return service{
 		userRepo:         userRepo,
 		relationshipRepo: relationshipRepo,
 	}

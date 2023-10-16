@@ -2,12 +2,14 @@ package user
 
 import "github.com/neygun/friend-management/internal/service/user"
 
-type UserHandler struct {
-	userService user.UserService
+// Handler represents user handler
+type Handler struct {
+	userService user.Service
 }
 
-func New(userService user.UserService) UserHandler {
-	return UserHandler{
+// New instantiates a user handler
+func New(userService user.Service) Handler {
+	return Handler{
 		userService: userService,
 	}
 }

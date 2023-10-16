@@ -6,20 +6,12 @@ import (
 	ormmodel "github.com/neygun/friend-management/internal/repository/ormmodel"
 
 	"github.com/neygun/friend-management/internal/model"
-	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-// UserFilter defines filtering options for user repo methods
-type UserFilter struct {
-	Emails []string
-}
-
 // GetUsers gets users by emails
-func (r userRepository) GetUsers(ctx context.Context, userFilter UserFilter) ([]model.User, error) {
+func (r repository) GetUsers(ctx context.Context, userFilter UserFilter) ([]model.User, error) {
 	var qms []qm.QueryMod
-
-	boil.DebugMode = true //
 
 	if userFilter.Emails != nil {
 		emails := make([]interface{}, len(userFilter.Emails))

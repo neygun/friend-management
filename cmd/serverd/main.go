@@ -18,7 +18,7 @@ import (
 	"github.com/neygun/friend-management/pkg/util"
 )
 
-func route(userHandler user.UserHandler, relationshipHandler relationship.RelationshipHandler) http.Handler {
+func route(userHandler user.Handler, relationshipHandler relationship.Handler) http.Handler {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)

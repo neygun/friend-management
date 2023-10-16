@@ -8,7 +8,19 @@ import (
 	"github.com/neygun/friend-management/internal/model"
 )
 
-func (h UserHandler) CreateUser() http.HandlerFunc {
+func isValid(input model.User) error {
+	// check if email exists
+	if input.Email == "" {
+		return handler.HandlerErr{
+			Code:        http.StatusBadRequest,
+			Description: "Missing email field",
+		}
+	}
+	return nil
+}
+
+// CreateUser handles requests to create a user
+func (h Handler) CreateUser() http.HandlerFunc {
 	return handler.ErrHandler(func(w http.ResponseWriter, r *http.Request) error {
 		var input model.User
 		if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
@@ -18,13 +30,7 @@ func (h UserHandler) CreateUser() http.HandlerFunc {
 			}
 		}
 
-		// check if email exists
-		if input.Email == "" {
-			return handler.HandlerErr{
-				Code:        http.StatusBadRequest,
-				Description: "Missing email field",
-			}
-		}
+		isValid(input)
 
 		if _, err := h.userService.CreateUser(r.Context(), input); err != nil {
 			return handler.ConvertErr(err)

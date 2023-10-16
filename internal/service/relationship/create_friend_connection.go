@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	// ErrInvalidUsersLength occurs when the number of users returned from GetUsers is not 2
-	ErrInvalidUsersLength = errors.New("the number of users must be 2")
+	// ErrUserNotFound occurs when 1 or 2 users not found by emails
+	ErrUserNotFound = errors.New("user not found")
 
 	// ErrFriendConnectionExists occurs when there is a friend connection between 2 users
 	ErrFriendConnectionExists = errors.New("friend connection exists")
@@ -25,34 +25,25 @@ type FriendConnectionInput struct {
 }
 
 // CreateFriendConnection gets 2 users from input and create a friend connection between them
-func (s relationshipService) CreateFriendConnection(ctx context.Context, friendConnInput FriendConnectionInput) (model.Relationship, error) {
+func (s service) CreateFriendConnection(ctx context.Context, friendConnInput FriendConnectionInput) (model.Relationship, error) {
 	// get users by emails
 	users, err := s.userRepo.GetUsers(ctx, user.UserFilter{Emails: friendConnInput.Friends})
 	if err != nil {
 		return model.Relationship{}, err
 	}
 
-	// check if number of users = 2
+	// check if there is 2 users with the emails
 	if len(users) != 2 {
-		return model.Relationship{}, ErrInvalidUsersLength
-	}
-
-	// check if friend connection exists
-	friendConnExists, err := s.relationshipRepo.FriendConnectionExists(ctx, users[0], users[1])
-	if err != nil {
-		return model.Relationship{}, err
-	}
-	if friendConnExists {
-		return model.Relationship{}, ErrFriendConnectionExists
+		return model.Relationship{}, ErrUserNotFound
 	}
 
 	// check if block exists
-	user1BlockExists, err := s.relationshipRepo.BlockExists(ctx, users[0], users[1])
+	user1BlockExists, err := s.relationshipRepo.BlockExists(ctx, users[0], users[1], model.RelationshipTypeBlock)
 	if err != nil {
 		return model.Relationship{}, err
 	}
 
-	user2BlockExists, err := s.relationshipRepo.BlockExists(ctx, users[1], users[0])
+	user2BlockExists, err := s.relationshipRepo.BlockExists(ctx, users[1], users[0], model.RelationshipTypeBlock)
 	if err != nil {
 		return model.Relationship{}, err
 	}
@@ -62,7 +53,7 @@ func (s relationshipService) CreateFriendConnection(ctx context.Context, friendC
 	}
 
 	// create friend connection
-	friendConn, err := s.relationshipRepo.CreateFriendConnection(ctx, users[0], users[1])
+	friendConn, err := s.relationshipRepo.Save(ctx, users[0], users[1], model.RelationshipTypeFriend)
 	if err != nil {
 		return model.Relationship{}, err
 	}
