@@ -1,6 +1,6 @@
 package user
 
-// UserFilter defines filtering options for user repo methods
-type UserFilter struct {
+// Filter defines filtering options for user repo methods
+type Filter struct {
 	Emails []string
 }

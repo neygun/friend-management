@@ -5,8 +5,9 @@ type RelationshipType string
 
 // List of relationship types
 const (
-	RelationshipTypeFriend RelationshipType = "FRIEND"
-	RelationshipTypeBlock  RelationshipType = "BLOCK"
+	RelationshipTypeFriend    RelationshipType = "FRIEND"
+	RelationshipTypeBlock     RelationshipType = "BLOCK"
+	RelationshipTypeSubscribe RelationshipType = "SUBSCRIBE"
 )
 
 // ToString converts Relationship to string

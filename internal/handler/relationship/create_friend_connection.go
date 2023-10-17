@@ -15,6 +15,16 @@ type FriendConnectionRequest struct {
 }
 
 func (req FriendConnectionRequest) isValid() error {
+	// check valid emails
+	for _, v := range req.Friends {
+		if !util.IsEmail(v) {
+			return handler.HandlerErr{
+				Code:        http.StatusBadRequest,
+				Description: "Invalid email",
+			}
+		}
+	}
+
 	// check if number of emails = 2
 	if len(req.Friends) != 2 {
 		return handler.HandlerErr{
@@ -23,13 +33,11 @@ func (req FriendConnectionRequest) isValid() error {
 		}
 	}
 
-	// check valid emails
-	for _, v := range req.Friends {
-		if !util.IsEmail(v) {
-			return handler.HandlerErr{
-				Code:        http.StatusBadRequest,
-				Description: "Invalid email",
-			}
+	// check if the emails are the same
+	if req.Friends[0] == req.Friends[1] {
+		return handler.HandlerErr{
+			Code:        http.StatusBadRequest,
+			Description: "The emails are the same",
 		}
 	}
 	return nil

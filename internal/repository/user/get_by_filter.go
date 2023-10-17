@@ -9,13 +9,13 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-// GetUsers gets users by emails
-func (r repository) GetUsers(ctx context.Context, userFilter UserFilter) ([]model.User, error) {
+// GetByFilter gets users by filter
+func (r repository) GetByFilter(ctx context.Context, filter Filter) ([]model.User, error) {
 	var qms []qm.QueryMod
 
-	if userFilter.Emails != nil {
-		emails := make([]interface{}, len(userFilter.Emails))
-		for i, v := range userFilter.Emails {
+	if filter.Emails != nil {
+		emails := make([]interface{}, len(filter.Emails))
+		for i, v := range filter.Emails {
 			emails[i] = v
 		}
 		qms = append(qms, qm.WhereIn("email IN ?", emails...))

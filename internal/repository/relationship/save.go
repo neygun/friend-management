@@ -9,20 +9,20 @@ import (
 )
 
 // Save upserts relationship
-func (r repository) Save(ctx context.Context, requestorId int64, targetId int64, relationshipType model.RelationshipType) (model.Relationship, error) {
+func (r repository) Save(ctx context.Context, relationship model.Relationship) (model.Relationship, error) {
 	newID, err := r.idsnf.NextID()
 	if err != nil {
 		return model.Relationship{}, err
 	}
 	friendConn := ormmodel.Relationship{
 		ID:          int64(newID),
-		RequestorID: requestorId,
-		TargetID:    targetId,
-		Type:        relationshipType.ToString(),
+		RequestorID: relationship.RequestorID,
+		TargetID:    relationship.TargetID,
+		Type:        relationship.Type,
 	}
 
 	if err := friendConn.Upsert(ctx, r.db, true, []string{ormmodel.RelationshipColumns.RequestorID, ormmodel.RelationshipColumns.TargetID,
-		ormmodel.RelationshipColumns.Type}, boil.Whitelist(), boil.Infer()); err != nil {
+		ormmodel.RelationshipColumns.Type}, boil.Whitelist(ormmodel.RelationshipColumns.Type), boil.Infer()); err != nil {
 		return model.Relationship{}, err
 	}
 

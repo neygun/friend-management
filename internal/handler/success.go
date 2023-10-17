@@ -2,5 +2,5 @@ package handler
 
 // SuccessResponse represents success reponses
 type SuccessResponse struct {
-	Success bool
+	Success bool `json:"success"`
 }
