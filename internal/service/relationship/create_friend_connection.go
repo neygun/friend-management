@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/neygun/friend-management/internal/model"
-	"github.com/neygun/friend-management/internal/repository/relationship"
 	"github.com/neygun/friend-management/internal/repository/user"
 )
 
@@ -27,25 +26,12 @@ func (s service) CreateFriendConnection(ctx context.Context, friendConnInput Fri
 	}
 
 	// check if block exists
-	user1Block, err := s.relationshipRepo.GetByFilter(ctx, relationship.Filter{
-		RequestorID: users[0].ID,
-		TargetID:    users[1].ID,
-		Type:        model.RelationshipTypeBlock.ToString(),
-	})
+	userIds := []int64{users[0].ID, users[1].ID}
+	blockExists, err := s.relationshipRepo.BlockExists(ctx, userIds)
 	if err != nil {
 		return model.Relationship{}, err
 	}
-
-	user2Block, err := s.relationshipRepo.GetByFilter(ctx, relationship.Filter{
-		RequestorID: users[1].ID,
-		TargetID:    users[0].ID,
-		Type:        model.RelationshipTypeBlock.ToString(),
-	})
-	if err != nil {
-		return model.Relationship{}, err
-	}
-
-	if len(user1Block) != 0 || len(user2Block) != 0 {
+	if blockExists {
 		return model.Relationship{}, ErrBlockExists
 	}
 

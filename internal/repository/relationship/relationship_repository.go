@@ -12,6 +12,7 @@ import (
 type Repository interface {
 	Save(ctx context.Context, relationship model.Relationship) (model.Relationship, error)
 	GetByFilter(ctx context.Context, filter Filter) ([]model.Relationship, error)
+	BlockExists(ctx context.Context, userIds []int64) (bool, error)
 }
 
 type repository struct {
