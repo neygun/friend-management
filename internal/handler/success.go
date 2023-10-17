@@ -1,4 +1,4 @@
-package model
+package handler
 
 // SuccessResponse represents success reponses
 type SuccessResponse struct {

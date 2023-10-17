@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/neygun/friend-management/internal/model"
 	"github.com/neygun/friend-management/internal/service/relationship"
 )
 
@@ -51,7 +50,7 @@ func ErrHandler(handlerFunc func(w http.ResponseWriter, r *http.Request) error) 
 			if ok {
 				w.WriteHeader(herr.Code)
 
-				json.NewEncoder(w).Encode(model.Response{
+				json.NewEncoder(w).Encode(Response{
 					Code:        herr.Code,
 					Description: herr.Description,
 				})
@@ -62,7 +61,7 @@ func ErrHandler(handlerFunc func(w http.ResponseWriter, r *http.Request) error) 
 
 			w.WriteHeader(http.StatusInternalServerError)
 
-			json.NewEncoder(w).Encode(model.Response{
+			json.NewEncoder(w).Encode(Response{
 				Code:        http.StatusInternalServerError,
 				Description: "Internal Server Error",
 			})

@@ -30,13 +30,15 @@ func (h Handler) CreateUser() http.HandlerFunc {
 			}
 		}
 
-		isValid(input)
+		if err := isValid(input); err != nil {
+			return err
+		}
 
 		if _, err := h.userService.CreateUser(r.Context(), input); err != nil {
 			return handler.ConvertErr(err)
 		}
 
-		json.NewEncoder(w).Encode(model.SuccessResponse{
+		json.NewEncoder(w).Encode(handler.SuccessResponse{
 			Success: true,
 		})
 

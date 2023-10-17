@@ -2,21 +2,9 @@ package relationship
 
 import (
 	"context"
-	"errors"
 
 	"github.com/neygun/friend-management/internal/model"
 	"github.com/neygun/friend-management/internal/repository/user"
-)
-
-var (
-	// ErrUserNotFound occurs when 1 or 2 users not found by emails
-	ErrUserNotFound = errors.New("user not found")
-
-	// ErrFriendConnectionExists occurs when there is a friend connection between 2 users
-	ErrFriendConnectionExists = errors.New("friend connection exists")
-
-	// ErrFriendConnectionExists occurs when there is a blocking relationship between 2 users
-	ErrBlockExists = errors.New("blocking relationship exists")
 )
 
 // FriendConnectionInput represents the input from request to create friend connection
@@ -38,22 +26,22 @@ func (s service) CreateFriendConnection(ctx context.Context, friendConnInput Fri
 	}
 
 	// check if block exists
-	user1BlockExists, err := s.relationshipRepo.BlockExists(ctx, users[0], users[1], model.RelationshipTypeBlock)
+	user1Block, err := s.relationshipRepo.GetRelationship(ctx, users[0].ID, users[1].ID, model.RelationshipTypeBlock)
 	if err != nil {
 		return model.Relationship{}, err
 	}
 
-	user2BlockExists, err := s.relationshipRepo.BlockExists(ctx, users[1], users[0], model.RelationshipTypeBlock)
+	user2Block, err := s.relationshipRepo.GetRelationship(ctx, users[1].ID, users[0].ID, model.RelationshipTypeBlock)
 	if err != nil {
 		return model.Relationship{}, err
 	}
 
-	if user1BlockExists || user2BlockExists {
+	if user1Block != (model.Relationship{}) || user2Block != (model.Relationship{}) {
 		return model.Relationship{}, ErrBlockExists
 	}
 
 	// create friend connection
-	friendConn, err := s.relationshipRepo.Save(ctx, users[0], users[1], model.RelationshipTypeFriend)
+	friendConn, err := s.relationshipRepo.Save(ctx, users[0].ID, users[1].ID, model.RelationshipTypeFriend)
 	if err != nil {
 		return model.Relationship{}, err
 	}

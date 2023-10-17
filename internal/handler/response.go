@@ -1,4 +1,4 @@
-package model
+package handler
 
 // Response represents JSON responses
 type Response struct {

@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/neygun/friend-management/internal/handler"
-	"github.com/neygun/friend-management/internal/model"
 	"github.com/neygun/friend-management/internal/service/relationship"
 	"github.com/neygun/friend-management/pkg/util"
 )
@@ -47,7 +46,9 @@ func (h Handler) CreateFriendConnection() http.HandlerFunc {
 			}
 		}
 
-		req.isValid()
+		if err := req.isValid(); err != nil {
+			return err
+		}
 
 		if _, err := h.relationshipService.CreateFriendConnection(r.Context(), relationship.FriendConnectionInput{
 			Friends: req.Friends,
@@ -55,7 +56,7 @@ func (h Handler) CreateFriendConnection() http.HandlerFunc {
 			return handler.ConvertErr(err)
 		}
 
-		json.NewEncoder(w).Encode(model.SuccessResponse{
+		json.NewEncoder(w).Encode(handler.SuccessResponse{
 			Success: true,
 		})
 

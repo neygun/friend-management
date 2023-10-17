@@ -10,13 +10,9 @@ import (
 
 // Repository represents relationship repository
 type Repository interface {
-	FriendConnectionExists(ctx context.Context, user1 model.User, user2 model.User, relationshipType model.RelationshipType) (bool, error)
+	Save(ctx context.Context, requestorId int64, targetId int64, relationshipType model.RelationshipType) (model.Relationship, error)
 
-	BlockExists(ctx context.Context, requestor model.User, target model.User, relationshipType model.RelationshipType) (bool, error)
-
-	CreateFriendConnection(ctx context.Context, user1 model.User, user2 model.User, relationshipType model.RelationshipType) (model.Relationship, error)
-
-	Save(ctx context.Context, user1 model.User, user2 model.User, relationshipType model.RelationshipType) (model.Relationship, error)
+	GetRelationship(ctx context.Context, requestorId int64, targetId int64, relationshipType model.RelationshipType) (model.Relationship, error)
 }
 
 type repository struct {

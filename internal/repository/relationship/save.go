@@ -8,15 +8,16 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
-func (r repository) Save(ctx context.Context, user1 model.User, user2 model.User, relationshipType model.RelationshipType) (model.Relationship, error) {
+// Save upserts relationship
+func (r repository) Save(ctx context.Context, requestorId int64, targetId int64, relationshipType model.RelationshipType) (model.Relationship, error) {
 	newID, err := r.idsnf.NextID()
 	if err != nil {
 		return model.Relationship{}, err
 	}
 	friendConn := ormmodel.Relationship{
 		ID:          int64(newID),
-		RequestorID: user1.ID,
-		TargetID:    user2.ID,
+		RequestorID: requestorId,
+		TargetID:    targetId,
 		Type:        relationshipType.ToString(),
 	}
 
