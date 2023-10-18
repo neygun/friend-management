@@ -19,6 +19,9 @@ type UserRequest struct {
 }
 
 func isValid(req UserRequest) error {
+	// trim space
+	req.Email = strings.TrimSpace(req.Email)
+
 	// check if email exists
 	if req.Email == "" {
 		return handler.HandlerErr{
@@ -44,14 +47,8 @@ func (h Handler) CreateUser() http.HandlerFunc {
 			return err
 		}
 
-		// trim space
-		req.Email = strings.TrimSpace(req.Email)
-
 		if _, err := h.userService.CreateUser(r.Context(), user.UserInput{
-			ID:        req.ID,
-			Email:     req.Email,
-			CreatedAt: req.CreatedAt,
-			UpdatedAt: req.UpdatedAt,
+			Email: req.Email,
 		}); err != nil {
 			return handler.ConvertErr(err)
 		}

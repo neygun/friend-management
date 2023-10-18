@@ -18,9 +18,6 @@ type UserInput struct {
 // CreateUser creates a user
 func (s service) CreateUser(ctx context.Context, userInput UserInput) (model.User, error) {
 	return s.userRepo.CreateUser(ctx, model.User{
-		ID:        userInput.ID,
-		Email:     userInput.Email,
-		CreatedAt: userInput.CreatedAt,
-		UpdatedAt: userInput.UpdatedAt,
+		Email: userInput.Email,
 	})
 }

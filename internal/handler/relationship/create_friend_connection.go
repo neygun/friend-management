@@ -16,6 +16,11 @@ type FriendConnectionRequest struct {
 }
 
 func (req FriendConnectionRequest) isValid() error {
+	// trim space
+	for i, v := range req.Friends {
+		req.Friends[i] = strings.TrimSpace(v)
+	}
+
 	// check valid emails
 	for _, v := range req.Friends {
 		if !util.IsEmail(v) {
@@ -57,11 +62,6 @@ func (h Handler) CreateFriendConnection() http.HandlerFunc {
 
 		if err := req.isValid(); err != nil {
 			return err
-		}
-
-		// trim space
-		for i, v := range req.Friends {
-			req.Friends[i] = strings.TrimSpace(v)
 		}
 
 		if _, err := h.relationshipService.CreateFriendConnection(r.Context(), relationship.FriendConnectionInput{
