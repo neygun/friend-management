@@ -3,6 +3,7 @@ package user
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/neygun/friend-management/internal/handler"
@@ -42,6 +43,9 @@ func (h Handler) CreateUser() http.HandlerFunc {
 		if err := isValid(req); err != nil {
 			return err
 		}
+
+		// trim space
+		req.Email = strings.TrimSpace(req.Email)
 
 		if _, err := h.userService.CreateUser(r.Context(), user.UserInput{
 			ID:        req.ID,

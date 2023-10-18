@@ -3,6 +3,7 @@ package relationship
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/neygun/friend-management/internal/handler"
 	"github.com/neygun/friend-management/internal/service/relationship"
@@ -56,6 +57,11 @@ func (h Handler) CreateFriendConnection() http.HandlerFunc {
 
 		if err := req.isValid(); err != nil {
 			return err
+		}
+
+		// trim space
+		for i, v := range req.Friends {
+			req.Friends[i] = strings.TrimSpace(v)
 		}
 
 		if _, err := h.relationshipService.CreateFriendConnection(r.Context(), relationship.FriendConnectionInput{
