@@ -8,6 +8,7 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
+// BlockExists checks if block between 2 user exists
 func (r repository) BlockExists(ctx context.Context, userIds []int64) (bool, error) {
 	var qms []qm.QueryMod
 
@@ -15,10 +16,6 @@ func (r repository) BlockExists(ctx context.Context, userIds []int64) (bool, err
 	qms = append(qms, ormmodel.RelationshipWhere.TargetID.IN(userIds))
 	qms = append(qms, ormmodel.RelationshipWhere.Type.EQ(model.RelationshipTypeBlock.ToString()))
 
-	blocks, err := ormmodel.Relationships(qms...).All(ctx, r.db)
-	if err != nil {
-		return false, err
-	}
-
-	return len(blocks) != 0, nil
+	exists, err := ormmodel.Relationships(qms...).Exists(ctx, r.db)
+	return exists, err
 }

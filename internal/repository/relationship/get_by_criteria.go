@@ -9,7 +9,7 @@ import (
 )
 
 // GetByFilter gets a relationship by filter
-func (r repository) GetByFilter(ctx context.Context, filter Filter) ([]model.Relationship, error) {
+func (r repository) GetByCriteria(ctx context.Context, filter model.RelationshipFilter) ([]model.Relationship, error) {
 
 	var qms []qm.QueryMod
 
@@ -22,7 +22,7 @@ func (r repository) GetByFilter(ctx context.Context, filter Filter) ([]model.Rel
 	}
 
 	if filter.Type != "" {
-		qms = append(qms, ormmodel.RelationshipWhere.Type.EQ(filter.Type))
+		qms = append(qms, ormmodel.RelationshipWhere.Type.EQ(filter.Type.ToString()))
 	}
 
 	relationships, err := ormmodel.Relationships(qms...).All(ctx, r.db)

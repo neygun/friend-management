@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/neygun/friend-management/internal/model"
-	"github.com/neygun/friend-management/internal/repository/user"
 )
 
 // FriendConnectionInput represents the input from request to create friend connection
@@ -15,7 +14,7 @@ type FriendConnectionInput struct {
 // CreateFriendConnection gets 2 users from input and create a friend connection between them
 func (s service) CreateFriendConnection(ctx context.Context, friendConnInput FriendConnectionInput) (model.Relationship, error) {
 	// get users by emails
-	users, err := s.userRepo.GetByFilter(ctx, user.Filter{Emails: friendConnInput.Friends})
+	users, err := s.userRepo.GetByCriteria(ctx, model.UserFilter{Emails: friendConnInput.Friends})
 	if err != nil {
 		return model.Relationship{}, err
 	}

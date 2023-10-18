@@ -10,15 +10,11 @@ import (
 )
 
 // GetByFilter gets users by filter
-func (r repository) GetByFilter(ctx context.Context, filter Filter) ([]model.User, error) {
+func (r repository) GetByCriteria(ctx context.Context, filter model.UserFilter) ([]model.User, error) {
 	var qms []qm.QueryMod
 
 	if filter.Emails != nil {
-		emails := make([]interface{}, len(filter.Emails))
-		for i, v := range filter.Emails {
-			emails[i] = v
-		}
-		qms = append(qms, qm.WhereIn("email IN ?", emails...))
+		qms = append(qms, ormmodel.UserWhere.Email.IN(filter.Emails))
 	}
 
 	users, err := ormmodel.Users(qms...).All(ctx, r.db)

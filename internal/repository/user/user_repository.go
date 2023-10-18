@@ -10,7 +10,7 @@ import (
 
 // Repository represents user repository
 type Repository interface {
-	GetByFilter(ctx context.Context, filter Filter) ([]model.User, error)
+	GetByCriteria(ctx context.Context, filter model.UserFilter) ([]model.User, error)
 	CreateUser(ctx context.Context, user model.User) (model.User, error)
 }
 
