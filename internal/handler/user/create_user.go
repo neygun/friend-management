@@ -3,14 +3,23 @@ package user
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/neygun/friend-management/internal/handler"
-	"github.com/neygun/friend-management/internal/model"
+	"github.com/neygun/friend-management/internal/service/user"
 )
 
-func isValid(input model.User) error {
+// UserRequest matches JSON request to create a user
+type UserRequest struct {
+	ID        int64     `json:"id"`
+	Email     string    `json:"email"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+func isValid(req UserRequest) error {
 	// check if email exists
-	if input.Email == "" {
+	if req.Email == "" {
 		return handler.HandlerErr{
 			Code:        http.StatusBadRequest,
 			Description: "Missing email field",
@@ -22,19 +31,24 @@ func isValid(input model.User) error {
 // CreateUser handles requests to create a user
 func (h Handler) CreateUser() http.HandlerFunc {
 	return handler.ErrHandler(func(w http.ResponseWriter, r *http.Request) error {
-		var input model.User
-		if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		var req UserRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			return handler.HandlerErr{
 				Code:        http.StatusBadRequest,
 				Description: "Invalid JSON request",
 			}
 		}
 
-		if err := isValid(input); err != nil {
+		if err := isValid(req); err != nil {
 			return err
 		}
 
-		if _, err := h.userService.CreateUser(r.Context(), input); err != nil {
+		if _, err := h.userService.CreateUser(r.Context(), user.UserInput{
+			ID:        req.ID,
+			Email:     req.Email,
+			CreatedAt: req.CreatedAt,
+			UpdatedAt: req.UpdatedAt,
+		}); err != nil {
 			return handler.ConvertErr(err)
 		}
 

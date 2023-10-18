@@ -11,7 +11,7 @@ import (
 
 // FriendConnectionRequest matches JSON request to create a friend connection
 type FriendConnectionRequest struct {
-	Friends []string
+	Friends []string `json:"friends"`
 }
 
 func (req FriendConnectionRequest) isValid() error {
