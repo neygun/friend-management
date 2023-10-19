@@ -2,6 +2,7 @@ output   = "internal/repository/ormmodel"
 wipe     = true
 no-tests = true
 add-enum-types = true
+pkgname = "ormmodel"
 
 [psql]
   dbname = "fm-pg"

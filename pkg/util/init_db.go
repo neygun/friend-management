@@ -1,13 +1,15 @@
-package db
+package util
 
 import (
 	"database/sql"
+	"os"
 
 	_ "github.com/lib/pq"
 )
 
+// Init init a database connection
 func Init() (*sql.DB, error) {
-	connectionStr := "postgres://postgres:postgres@localhost:5432/fm-pg?sslmode=disable"
+	connectionStr := os.Getenv("DB_URL")
 	db, err := sql.Open("postgres", connectionStr)
 	return db, err
 }
