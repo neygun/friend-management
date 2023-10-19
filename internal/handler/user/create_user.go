@@ -7,7 +7,8 @@ import (
 	"time"
 
 	"github.com/neygun/friend-management/internal/handler"
-	"github.com/neygun/friend-management/internal/service/user"
+	"github.com/neygun/friend-management/internal/model"
+	"github.com/neygun/friend-management/pkg/util"
 )
 
 // UserRequest matches JSON request to create a user
@@ -18,7 +19,7 @@ type UserRequest struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-func isValid(req UserRequest) error {
+func (req *UserRequest) isValid() error {
 	// trim space
 	req.Email = strings.TrimSpace(req.Email)
 
@@ -29,6 +30,15 @@ func isValid(req UserRequest) error {
 			Description: "Missing email field",
 		}
 	}
+
+	// check if the email is valid
+	if !util.IsEmail(req.Email) {
+		return handler.HandlerErr{
+			Code:        http.StatusBadRequest,
+			Description: "Invalid email",
+		}
+	}
+
 	return nil
 }
 
@@ -43,11 +53,11 @@ func (h Handler) CreateUser() http.HandlerFunc {
 			}
 		}
 
-		if err := isValid(req); err != nil {
+		if err := req.isValid(); err != nil {
 			return err
 		}
 
-		if _, err := h.userService.CreateUser(r.Context(), user.UserInput{
+		if _, err := h.userService.CreateUser(r.Context(), model.User{
 			Email: req.Email,
 		}); err != nil {
 			return handler.ConvertErr(err)

@@ -15,7 +15,7 @@ type FriendConnectionRequest struct {
 	Friends []string `json:"friends"`
 }
 
-func (req FriendConnectionRequest) isValid() error {
+func (req *FriendConnectionRequest) isValid() error {
 	// trim space
 	for i, v := range req.Friends {
 		req.Friends[i] = strings.TrimSpace(v)
