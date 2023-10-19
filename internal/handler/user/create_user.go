@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/neygun/friend-management/internal/handler"
 	"github.com/neygun/friend-management/internal/model"
@@ -13,10 +12,7 @@ import (
 
 // UserRequest matches JSON request to create a user
 type UserRequest struct {
-	ID        int64     `json:"id"`
-	Email     string    `json:"email"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	Email string `json:"email"`
 }
 
 func (req *UserRequest) isValid() error {
