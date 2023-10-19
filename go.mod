@@ -5,7 +5,11 @@ go 1.21.1
 require github.com/lib/pq v1.10.9
 
 require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/ericlagergren/decimal v0.0.0-20190420051523-6335edbaa640 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/stretchr/objx v0.5.0 // indirect
+	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/volatiletech/null v8.0.0+incompatible // indirect
 )
 
