@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/neygun/friend-management/internal/handler"
+	"github.com/neygun/friend-management/internal/handler/user/testdata"
 	"github.com/neygun/friend-management/internal/model"
 	"github.com/neygun/friend-management/internal/service/user"
 	"github.com/stretchr/testify/mock"
@@ -33,7 +34,7 @@ func TestHandler_CreateUser(t *testing.T) {
 
 	tcs := map[string]args{
 		"err - invalid JSON request": {
-			givenRequest:  ``,
+			givenRequest:  "invalid_json_request.json",
 			expStatusCode: http.StatusBadRequest,
 			expResponse: handler.ToJsonString(handler.Response{
 				Code:        http.StatusBadRequest,
@@ -41,7 +42,7 @@ func TestHandler_CreateUser(t *testing.T) {
 			}),
 		},
 		"err - missing email field": {
-			givenRequest:  `{"test":"test"}`,
+			givenRequest:  "missing_email.json",
 			expStatusCode: http.StatusBadRequest,
 			expResponse: handler.ToJsonString(handler.Response{
 				Code:        http.StatusBadRequest,
@@ -49,7 +50,7 @@ func TestHandler_CreateUser(t *testing.T) {
 			}),
 		},
 		"err - invalid email": {
-			givenRequest:  `{"email":"testexample.com"}`,
+			givenRequest:  "invalid_email.json",
 			expStatusCode: http.StatusBadRequest,
 			expResponse: handler.ToJsonString(handler.Response{
 				Code:        http.StatusBadRequest,
@@ -57,7 +58,7 @@ func TestHandler_CreateUser(t *testing.T) {
 			}),
 		},
 		"service error": {
-			givenRequest: `{"email":"test@example.com"}`,
+			givenRequest: "valid_request.json",
 			mockCreateUserService: mockCreateUserService{
 				expCall: true,
 				input: model.User{
@@ -72,7 +73,7 @@ func TestHandler_CreateUser(t *testing.T) {
 			}),
 		},
 		"success": {
-			givenRequest: `{"email":"test@example.com"}`,
+			givenRequest: "valid_request.json",
 			mockCreateUserService: mockCreateUserService{
 				expCall: true,
 				input: model.User{
@@ -93,7 +94,8 @@ func TestHandler_CreateUser(t *testing.T) {
 	for scenario, tc := range tcs {
 		t.Run(scenario, func(t *testing.T) {
 			// Given
-			req := httptest.NewRequest(http.MethodPost, "/users", strings.NewReader(tc.givenRequest))
+			content := testdata.LoadTestJSONFile(t, "testdata/"+tc.givenRequest)
+			req := httptest.NewRequest(http.MethodPost, "/users", strings.NewReader(content))
 			routeCtx := chi.NewRouteContext()
 			req.Header.Set("Content-Type", "application/json")
 			ctx := context.WithValue(req.Context(), chi.RouteCtxKey, routeCtx)

@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/neygun/friend-management/internal/handler"
+	"github.com/neygun/friend-management/internal/handler/relationship/testdata"
 	"github.com/neygun/friend-management/internal/model"
 	"github.com/neygun/friend-management/internal/service/relationship"
 	"github.com/stretchr/testify/mock"
@@ -33,7 +34,7 @@ func TestHandler_CreateFriendConnection(t *testing.T) {
 
 	tcs := map[string]args{
 		"err - invalid JSON request": {
-			givenRequest:  ``,
+			givenRequest:  "invalid_json_request.json",
 			expStatusCode: http.StatusBadRequest,
 			expResponse: handler.ToJsonString(handler.Response{
 				Code:        http.StatusBadRequest,
@@ -41,7 +42,7 @@ func TestHandler_CreateFriendConnection(t *testing.T) {
 			}),
 		},
 		"err - invalid email": {
-			givenRequest:  `{"friends":["test1example.com", "test2example.com"]}`,
+			givenRequest:  "invalid_email.json",
 			expStatusCode: http.StatusBadRequest,
 			expResponse: handler.ToJsonString(handler.Response{
 				Code:        http.StatusBadRequest,
@@ -49,7 +50,7 @@ func TestHandler_CreateFriendConnection(t *testing.T) {
 			}),
 		},
 		"err - the number of emails must be 2": {
-			givenRequest:  `{"friends":["test1@example.com"]}`,
+			givenRequest:  "num_of_emails_is_not_2.json",
 			expStatusCode: http.StatusBadRequest,
 			expResponse: handler.ToJsonString(handler.Response{
 				Code:        http.StatusBadRequest,
@@ -57,7 +58,7 @@ func TestHandler_CreateFriendConnection(t *testing.T) {
 			}),
 		},
 		"err - the emails are the same": {
-			givenRequest:  `{"friends":["test1@example.com", "test1@example.com"]}`,
+			givenRequest:  "same_emails.json",
 			expStatusCode: http.StatusBadRequest,
 			expResponse: handler.ToJsonString(handler.Response{
 				Code:        http.StatusBadRequest,
@@ -65,7 +66,7 @@ func TestHandler_CreateFriendConnection(t *testing.T) {
 			}),
 		},
 		"err - user not found": {
-			givenRequest: `{"friends":["test1@example.com", "test2@example.com"]}`,
+			givenRequest: "valid_request.json",
 			mockCreateFriendConnService: mockCreateFriendConnectionService{
 				expCall: true,
 				input: relationship.FriendConnectionInput{
@@ -83,7 +84,7 @@ func TestHandler_CreateFriendConnection(t *testing.T) {
 			}),
 		},
 		"err - blocking relationship exists": {
-			givenRequest: `{"friends":["test1@example.com", "test2@example.com"]}`,
+			givenRequest: "valid_request.json",
 			mockCreateFriendConnService: mockCreateFriendConnectionService{
 				expCall: true,
 				input: relationship.FriendConnectionInput{
@@ -101,7 +102,7 @@ func TestHandler_CreateFriendConnection(t *testing.T) {
 			}),
 		},
 		"service error": {
-			givenRequest: `{"friends":["test1@example.com", "test2@example.com"]}`,
+			givenRequest: "valid_request.json",
 			mockCreateFriendConnService: mockCreateFriendConnectionService{
 				expCall: true,
 				input: relationship.FriendConnectionInput{
@@ -119,7 +120,7 @@ func TestHandler_CreateFriendConnection(t *testing.T) {
 			}),
 		},
 		"success": {
-			givenRequest: `{"friends":["test1@example.com", "test2@example.com"]}`,
+			givenRequest: "valid_request.json",
 			mockCreateFriendConnService: mockCreateFriendConnectionService{
 				expCall: true,
 				input: relationship.FriendConnectionInput{
@@ -145,7 +146,8 @@ func TestHandler_CreateFriendConnection(t *testing.T) {
 	for scenario, tc := range tcs {
 		t.Run(scenario, func(t *testing.T) {
 			// Given
-			req := httptest.NewRequest(http.MethodPost, "/friends", strings.NewReader(tc.givenRequest))
+			content := testdata.LoadTestJSONFile(t, "testdata/"+tc.givenRequest)
+			req := httptest.NewRequest(http.MethodPost, "/friends", strings.NewReader(content))
 			routeCtx := chi.NewRouteContext()
 			req.Header.Set("Content-Type", "application/json")
 			ctx := context.WithValue(req.Context(), chi.RouteCtxKey, routeCtx)
