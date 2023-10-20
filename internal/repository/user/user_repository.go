@@ -2,9 +2,9 @@ package user
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/neygun/friend-management/internal/model"
+	"github.com/neygun/friend-management/pkg/db"
 	"github.com/sony/sonyflake"
 )
 
@@ -15,12 +15,12 @@ type Repository interface {
 }
 
 type repository struct {
-	db    *sql.DB
+	db    db.ContextExecutor
 	idsnf *sonyflake.Sonyflake
 }
 
 // New instantiates a user repository
-func New(db *sql.DB) Repository {
+func New(db db.ContextExecutor) Repository {
 	flake := sonyflake.NewSonyflake(sonyflake.Settings{})
 	if flake == nil {
 		panic("Couldn't generate sonyflake.NewSonyflake")

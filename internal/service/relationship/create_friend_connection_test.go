@@ -39,7 +39,7 @@ func TestController_CreateFriendConnection(t *testing.T) {
 		mockGetByCriteriaRepo mockGetByCriteriaRepo
 		mockBlockExistsRepo   mockBlockExistsRepo
 		mockSaveRepo          mockSaveRepo
-		expRes                model.Relationship
+		expRs                 model.Relationship
 		expErr                error
 	}
 
@@ -240,7 +240,7 @@ func TestController_CreateFriendConnection(t *testing.T) {
 					Type:        model.RelationshipTypeFriend.ToString(),
 				},
 			},
-			expRes: model.Relationship{
+			expRs: model.Relationship{
 				ID:          1,
 				RequestorID: 1,
 				TargetID:    2,
@@ -275,15 +275,15 @@ func TestController_CreateFriendConnection(t *testing.T) {
 				)
 			}
 
-			serv := New(mockUserRepo, mockRelationshipRepo)
-			rs, err := serv.CreateFriendConnection(ctx, tc.givenFriendConnInput)
+			instance := New(mockUserRepo, mockRelationshipRepo)
+			rs, err := instance.CreateFriendConnection(ctx, tc.givenFriendConnInput)
 
 			// Then
 			if tc.expErr != nil {
 				require.EqualError(t, err, tc.expErr.Error())
 			} else {
 				require.NoError(t, err)
-				require.Equal(t, tc.expRes, rs)
+				require.Equal(t, tc.expRs, rs)
 			}
 		})
 	}
