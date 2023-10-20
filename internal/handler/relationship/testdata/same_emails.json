@@ -1,6 +1,4 @@
 {
-    "friends": [
-        "test1@example.com",
-        "test1@example.com"
-    ]
+    "code": 400,
+    "description": "The emails are the same"
 }

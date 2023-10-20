@@ -1,3 +1,4 @@
 {
-    "email": "testexample.com"
+    "code": 400,
+    "description": "Invalid email"
 }

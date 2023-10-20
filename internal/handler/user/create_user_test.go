@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/go-chi/chi"
-	"github.com/neygun/friend-management/internal/handler"
 	"github.com/neygun/friend-management/internal/handler/user/testdata"
 	"github.com/neygun/friend-management/internal/model"
 	"github.com/neygun/friend-management/internal/service/user"
@@ -34,31 +33,22 @@ func TestHandler_CreateUser(t *testing.T) {
 
 	tcs := map[string]args{
 		"err - invalid JSON request": {
-			givenRequest:  "invalid_json_request.json",
+			givenRequest:  ``,
 			expStatusCode: http.StatusBadRequest,
-			expResponse: handler.ToJsonString(handler.Response{
-				Code:        http.StatusBadRequest,
-				Description: "Invalid JSON request",
-			}),
+			expResponse:   "invalid_json_request.json",
 		},
 		"err - missing email field": {
-			givenRequest:  "missing_email.json",
+			givenRequest:  `{"test":"test"}`,
 			expStatusCode: http.StatusBadRequest,
-			expResponse: handler.ToJsonString(handler.Response{
-				Code:        http.StatusBadRequest,
-				Description: "Missing email field",
-			}),
+			expResponse:   "missing_email.json",
 		},
 		"err - invalid email": {
-			givenRequest:  "invalid_email.json",
+			givenRequest:  `{"email":"testexample.com"}`,
 			expStatusCode: http.StatusBadRequest,
-			expResponse: handler.ToJsonString(handler.Response{
-				Code:        http.StatusBadRequest,
-				Description: "Invalid email",
-			}),
+			expResponse:   "invalid_email.json",
 		},
 		"service error": {
-			givenRequest: "valid_request.json",
+			givenRequest: `{"email":"test@example.com"}`,
 			mockCreateUserService: mockCreateUserService{
 				expCall: true,
 				input: model.User{
@@ -67,13 +57,10 @@ func TestHandler_CreateUser(t *testing.T) {
 				err: errors.New("test"),
 			},
 			expStatusCode: http.StatusInternalServerError,
-			expResponse: handler.ToJsonString(handler.Response{
-				Code:        http.StatusInternalServerError,
-				Description: "Internal Server Error",
-			}),
+			expResponse:   "server_error.json",
 		},
 		"success": {
-			givenRequest: "valid_request.json",
+			givenRequest: `{"email":"test@example.com"}`,
 			mockCreateUserService: mockCreateUserService{
 				expCall: true,
 				input: model.User{
@@ -85,17 +72,14 @@ func TestHandler_CreateUser(t *testing.T) {
 				},
 			},
 			expStatusCode: http.StatusOK,
-			expResponse: handler.ToJsonString(handler.SuccessResponse{
-				Success: true,
-			}),
+			expResponse:   "success.json",
 		},
 	}
 
 	for scenario, tc := range tcs {
 		t.Run(scenario, func(t *testing.T) {
 			// Given
-			content := testdata.LoadTestJSONFile(t, "testdata/"+tc.givenRequest)
-			req := httptest.NewRequest(http.MethodPost, "/users", strings.NewReader(content))
+			req := httptest.NewRequest(http.MethodPost, "/users", strings.NewReader(tc.givenRequest))
 			routeCtx := chi.NewRouteContext()
 			req.Header.Set("Content-Type", "application/json")
 			ctx := context.WithValue(req.Context(), chi.RouteCtxKey, routeCtx)
@@ -118,7 +102,8 @@ func TestHandler_CreateUser(t *testing.T) {
 			// Then
 			require.Equal(t, tc.expStatusCode, res.Code)
 			if tc.expResponse != "" {
-				require.JSONEq(t, tc.expResponse, res.Body.String())
+				expResponse := testdata.LoadTestJSONFile(t, "testdata/"+tc.expResponse)
+				require.JSONEq(t, expResponse, res.Body.String())
 			}
 			mockUserService.AssertExpectations(t)
 		})

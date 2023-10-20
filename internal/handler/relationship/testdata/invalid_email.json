@@ -1,6 +1,4 @@
 {
-    "friends": [
-        "test1example.com",
-        "test2example.com"
-    ]
+    "code": 400,
+    "description": "Invalid email"
 }
