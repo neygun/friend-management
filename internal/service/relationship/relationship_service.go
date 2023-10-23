@@ -11,6 +11,7 @@ import (
 // Service represents relationship service
 type Service interface {
 	CreateFriendConnection(ctx context.Context, friendConnReq FriendConnectionInput) (model.Relationship, error)
+	GetFriendsList(ctx context.Context, email string) ([]string, int, error)
 }
 
 type service struct {
