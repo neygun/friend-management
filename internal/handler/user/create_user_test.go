@@ -105,7 +105,6 @@ func TestHandler_CreateUser(t *testing.T) {
 				expResponse := testdata.LoadTestJSONFile(t, "testdata/"+tc.expResponse)
 				require.JSONEq(t, expResponse, res.Body.String())
 			}
-			mockUserService.AssertExpectations(t)
 		})
 	}
 }

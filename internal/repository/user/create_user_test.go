@@ -9,7 +9,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/neygun/friend-management/internal/model"
-	"github.com/neygun/friend-management/internal/repository/user/testdata"
 	"github.com/neygun/friend-management/pkg/db"
 	"github.com/neygun/friend-management/pkg/util/test"
 	"github.com/stretchr/testify/require"
@@ -53,7 +52,6 @@ func TestImpl_CreateUser(t *testing.T) {
 					dbMock.Close()
 					instance = New(dbMock)
 				}
-				testdata.LoadTestSQLFile(t, tx, "testdata/create_user.sql")
 
 				// When
 				result, err := instance.CreateUser(ctx, tc.givenUser)

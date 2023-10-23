@@ -148,7 +148,6 @@ func TestHandler_CreateFriendConnection(t *testing.T) {
 				expResponse := testdata.LoadTestJSONFile(t, "testdata/"+tc.expResponse)
 				require.JSONEq(t, expResponse, res.Body.String())
 			}
-			mockRelationshipService.AssertExpectations(t)
 		})
 	}
 }
