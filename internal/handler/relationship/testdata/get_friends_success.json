@@ -1,0 +1,8 @@
+{
+    "success": true,
+    "friends": [
+        "test2@example.com",
+        "test3@example.com"
+    ],
+    "count": 2
+}
