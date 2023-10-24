@@ -58,12 +58,12 @@ var RelationshipTableColumns = struct {
 	CreatedAt   string
 	UpdatedAt   string
 }{
-	ID:          "relationship.id",
-	RequestorID: "relationship.requestor_id",
-	TargetID:    "relationship.target_id",
-	Type:        "relationship.type",
-	CreatedAt:   "relationship.created_at",
-	UpdatedAt:   "relationship.updated_at",
+	ID:          "relationships.id",
+	RequestorID: "relationships.requestor_id",
+	TargetID:    "relationships.target_id",
+	Type:        "relationships.type",
+	CreatedAt:   "relationships.created_at",
+	UpdatedAt:   "relationships.updated_at",
 }
 
 // Generated where
@@ -147,12 +147,12 @@ var RelationshipWhere = struct {
 	CreatedAt   whereHelpertime_Time
 	UpdatedAt   whereHelpertime_Time
 }{
-	ID:          whereHelperint64{field: "\"relationship\".\"id\""},
-	RequestorID: whereHelperint64{field: "\"relationship\".\"requestor_id\""},
-	TargetID:    whereHelperint64{field: "\"relationship\".\"target_id\""},
-	Type:        whereHelperstring{field: "\"relationship\".\"type\""},
-	CreatedAt:   whereHelpertime_Time{field: "\"relationship\".\"created_at\""},
-	UpdatedAt:   whereHelpertime_Time{field: "\"relationship\".\"updated_at\""},
+	ID:          whereHelperint64{field: "\"relationships\".\"id\""},
+	RequestorID: whereHelperint64{field: "\"relationships\".\"requestor_id\""},
+	TargetID:    whereHelperint64{field: "\"relationships\".\"target_id\""},
+	Type:        whereHelperstring{field: "\"relationships\".\"type\""},
+	CreatedAt:   whereHelpertime_Time{field: "\"relationships\".\"created_at\""},
+	UpdatedAt:   whereHelpertime_Time{field: "\"relationships\".\"updated_at\""},
 }
 
 // RelationshipRels is where relationship names are stored.
@@ -417,7 +417,7 @@ func (q relationshipQuery) One(ctx context.Context, exec boil.ContextExecutor) (
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, sql.ErrNoRows
 		}
-		return nil, errors.Wrap(err, "ormmodel: failed to execute a one query for relationship")
+		return nil, errors.Wrap(err, "ormmodel: failed to execute a one query for relationships")
 	}
 
 	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
@@ -456,7 +456,7 @@ func (q relationshipQuery) Count(ctx context.Context, exec boil.ContextExecutor)
 
 	err := q.Query.QueryRowContext(ctx, exec).Scan(&count)
 	if err != nil {
-		return 0, errors.Wrap(err, "ormmodel: failed to count relationship rows")
+		return 0, errors.Wrap(err, "ormmodel: failed to count relationships rows")
 	}
 
 	return count, nil
@@ -472,7 +472,7 @@ func (q relationshipQuery) Exists(ctx context.Context, exec boil.ContextExecutor
 
 	err := q.Query.QueryRowContext(ctx, exec).Scan(&count)
 	if err != nil {
-		return false, errors.Wrap(err, "ormmodel: failed to check if relationship exists")
+		return false, errors.Wrap(err, "ormmodel: failed to check if relationships exists")
 	}
 
 	return count > 0, nil
@@ -558,8 +558,8 @@ func (relationshipL) LoadRequestor(ctx context.Context, e boil.ContextExecutor, 
 	}
 
 	query := NewQuery(
-		qm.From(`user`),
-		qm.WhereIn(`user.id in ?`, args...),
+		qm.From(`users`),
+		qm.WhereIn(`users.id in ?`, args...),
 	)
 	if mods != nil {
 		mods.Apply(query)
@@ -576,10 +576,10 @@ func (relationshipL) LoadRequestor(ctx context.Context, e boil.ContextExecutor, 
 	}
 
 	if err = results.Close(); err != nil {
-		return errors.Wrap(err, "failed to close results of eager load for user")
+		return errors.Wrap(err, "failed to close results of eager load for users")
 	}
 	if err = results.Err(); err != nil {
-		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for user")
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for users")
 	}
 
 	if len(userAfterSelectHooks) != 0 {
@@ -678,8 +678,8 @@ func (relationshipL) LoadTarget(ctx context.Context, e boil.ContextExecutor, sin
 	}
 
 	query := NewQuery(
-		qm.From(`user`),
-		qm.WhereIn(`user.id in ?`, args...),
+		qm.From(`users`),
+		qm.WhereIn(`users.id in ?`, args...),
 	)
 	if mods != nil {
 		mods.Apply(query)
@@ -696,10 +696,10 @@ func (relationshipL) LoadTarget(ctx context.Context, e boil.ContextExecutor, sin
 	}
 
 	if err = results.Close(); err != nil {
-		return errors.Wrap(err, "failed to close results of eager load for user")
+		return errors.Wrap(err, "failed to close results of eager load for users")
 	}
 	if err = results.Err(); err != nil {
-		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for user")
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for users")
 	}
 
 	if len(userAfterSelectHooks) != 0 {
@@ -752,7 +752,7 @@ func (o *Relationship) SetRequestor(ctx context.Context, exec boil.ContextExecut
 	}
 
 	updateQuery := fmt.Sprintf(
-		"UPDATE \"relationship\" SET %s WHERE %s",
+		"UPDATE \"relationships\" SET %s WHERE %s",
 		strmangle.SetParamNames("\"", "\"", 1, []string{"requestor_id"}),
 		strmangle.WhereClause("\"", "\"", 2, relationshipPrimaryKeyColumns),
 	)
@@ -799,7 +799,7 @@ func (o *Relationship) SetTarget(ctx context.Context, exec boil.ContextExecutor,
 	}
 
 	updateQuery := fmt.Sprintf(
-		"UPDATE \"relationship\" SET %s WHERE %s",
+		"UPDATE \"relationships\" SET %s WHERE %s",
 		strmangle.SetParamNames("\"", "\"", 1, []string{"target_id"}),
 		strmangle.WhereClause("\"", "\"", 2, relationshipPrimaryKeyColumns),
 	)
@@ -836,10 +836,10 @@ func (o *Relationship) SetTarget(ctx context.Context, exec boil.ContextExecutor,
 
 // Relationships retrieves all the records using an executor.
 func Relationships(mods ...qm.QueryMod) relationshipQuery {
-	mods = append(mods, qm.From("\"relationship\""))
+	mods = append(mods, qm.From("\"relationships\""))
 	q := NewQuery(mods...)
 	if len(queries.GetSelect(q)) == 0 {
-		queries.SetSelect(q, []string{"\"relationship\".*"})
+		queries.SetSelect(q, []string{"\"relationships\".*"})
 	}
 
 	return relationshipQuery{q}
@@ -855,7 +855,7 @@ func FindRelationship(ctx context.Context, exec boil.ContextExecutor, iD int64, 
 		sel = strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, selectCols), ",")
 	}
 	query := fmt.Sprintf(
-		"select %s from \"relationship\" where \"id\"=$1", sel,
+		"select %s from \"relationships\" where \"id\"=$1", sel,
 	)
 
 	q := queries.Raw(query, iD)
@@ -865,7 +865,7 @@ func FindRelationship(ctx context.Context, exec boil.ContextExecutor, iD int64, 
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, sql.ErrNoRows
 		}
-		return nil, errors.Wrap(err, "ormmodel: unable to select from relationship")
+		return nil, errors.Wrap(err, "ormmodel: unable to select from relationships")
 	}
 
 	if err = relationshipObj.doAfterSelectHooks(ctx, exec); err != nil {
@@ -879,7 +879,7 @@ func FindRelationship(ctx context.Context, exec boil.ContextExecutor, iD int64, 
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
 func (o *Relationship) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
-		return errors.New("ormmodel: no relationship provided for insertion")
+		return errors.New("ormmodel: no relationships provided for insertion")
 	}
 
 	var err error
@@ -922,9 +922,9 @@ func (o *Relationship) Insert(ctx context.Context, exec boil.ContextExecutor, co
 			return err
 		}
 		if len(wl) != 0 {
-			cache.query = fmt.Sprintf("INSERT INTO \"relationship\" (\"%s\") %%sVALUES (%s)%%s", strings.Join(wl, "\",\""), strmangle.Placeholders(dialect.UseIndexPlaceholders, len(wl), 1, 1))
+			cache.query = fmt.Sprintf("INSERT INTO \"relationships\" (\"%s\") %%sVALUES (%s)%%s", strings.Join(wl, "\",\""), strmangle.Placeholders(dialect.UseIndexPlaceholders, len(wl), 1, 1))
 		} else {
-			cache.query = "INSERT INTO \"relationship\" %sDEFAULT VALUES%s"
+			cache.query = "INSERT INTO \"relationships\" %sDEFAULT VALUES%s"
 		}
 
 		var queryOutput, queryReturning string
@@ -952,7 +952,7 @@ func (o *Relationship) Insert(ctx context.Context, exec boil.ContextExecutor, co
 	}
 
 	if err != nil {
-		return errors.Wrap(err, "ormmodel: unable to insert into relationship")
+		return errors.Wrap(err, "ormmodel: unable to insert into relationships")
 	}
 
 	if !cached {
@@ -993,10 +993,10 @@ func (o *Relationship) Update(ctx context.Context, exec boil.ContextExecutor, co
 			wl = strmangle.SetComplement(wl, []string{"created_at"})
 		}
 		if len(wl) == 0 {
-			return 0, errors.New("ormmodel: unable to update relationship, could not build whitelist")
+			return 0, errors.New("ormmodel: unable to update relationships, could not build whitelist")
 		}
 
-		cache.query = fmt.Sprintf("UPDATE \"relationship\" SET %s WHERE %s",
+		cache.query = fmt.Sprintf("UPDATE \"relationships\" SET %s WHERE %s",
 			strmangle.SetParamNames("\"", "\"", 1, wl),
 			strmangle.WhereClause("\"", "\"", len(wl)+1, relationshipPrimaryKeyColumns),
 		)
@@ -1016,12 +1016,12 @@ func (o *Relationship) Update(ctx context.Context, exec boil.ContextExecutor, co
 	var result sql.Result
 	result, err = exec.ExecContext(ctx, cache.query, values...)
 	if err != nil {
-		return 0, errors.Wrap(err, "ormmodel: unable to update relationship row")
+		return 0, errors.Wrap(err, "ormmodel: unable to update relationships row")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "ormmodel: failed to get rows affected by update for relationship")
+		return 0, errors.Wrap(err, "ormmodel: failed to get rows affected by update for relationships")
 	}
 
 	if !cached {
@@ -1039,12 +1039,12 @@ func (q relationshipQuery) UpdateAll(ctx context.Context, exec boil.ContextExecu
 
 	result, err := q.Query.ExecContext(ctx, exec)
 	if err != nil {
-		return 0, errors.Wrap(err, "ormmodel: unable to update all for relationship")
+		return 0, errors.Wrap(err, "ormmodel: unable to update all for relationships")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "ormmodel: unable to retrieve rows affected for relationship")
+		return 0, errors.Wrap(err, "ormmodel: unable to retrieve rows affected for relationships")
 	}
 
 	return rowsAff, nil
@@ -1077,7 +1077,7 @@ func (o RelationshipSlice) UpdateAll(ctx context.Context, exec boil.ContextExecu
 		args = append(args, pkeyArgs...)
 	}
 
-	sql := fmt.Sprintf("UPDATE \"relationship\" SET %s WHERE %s",
+	sql := fmt.Sprintf("UPDATE \"relationships\" SET %s WHERE %s",
 		strmangle.SetParamNames("\"", "\"", 1, colNames),
 		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), len(colNames)+1, relationshipPrimaryKeyColumns, len(o)))
 
@@ -1102,7 +1102,7 @@ func (o RelationshipSlice) UpdateAll(ctx context.Context, exec boil.ContextExecu
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *Relationship) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
-		return errors.New("ormmodel: no relationship provided for upsert")
+		return errors.New("ormmodel: no relationships provided for upsert")
 	}
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
@@ -1167,7 +1167,7 @@ func (o *Relationship) Upsert(ctx context.Context, exec boil.ContextExecutor, up
 		)
 
 		if updateOnConflict && len(update) == 0 {
-			return errors.New("ormmodel: unable to upsert relationship, could not build update column list")
+			return errors.New("ormmodel: unable to upsert relationships, could not build update column list")
 		}
 
 		conflict := conflictColumns
@@ -1175,7 +1175,7 @@ func (o *Relationship) Upsert(ctx context.Context, exec boil.ContextExecutor, up
 			conflict = make([]string, len(relationshipPrimaryKeyColumns))
 			copy(conflict, relationshipPrimaryKeyColumns)
 		}
-		cache.query = buildUpsertQueryPostgres(dialect, "\"relationship\"", updateOnConflict, ret, update, conflict, insert)
+		cache.query = buildUpsertQueryPostgres(dialect, "\"relationships\"", updateOnConflict, ret, update, conflict, insert)
 
 		cache.valueMapping, err = queries.BindMapping(relationshipType, relationshipMapping, insert)
 		if err != nil {
@@ -1210,7 +1210,7 @@ func (o *Relationship) Upsert(ctx context.Context, exec boil.ContextExecutor, up
 		_, err = exec.ExecContext(ctx, cache.query, vals...)
 	}
 	if err != nil {
-		return errors.Wrap(err, "ormmodel: unable to upsert relationship")
+		return errors.Wrap(err, "ormmodel: unable to upsert relationships")
 	}
 
 	if !cached {
@@ -1234,7 +1234,7 @@ func (o *Relationship) Delete(ctx context.Context, exec boil.ContextExecutor) (i
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), relationshipPrimaryKeyMapping)
-	sql := "DELETE FROM \"relationship\" WHERE \"id\"=$1"
+	sql := "DELETE FROM \"relationships\" WHERE \"id\"=$1"
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -1243,12 +1243,12 @@ func (o *Relationship) Delete(ctx context.Context, exec boil.ContextExecutor) (i
 	}
 	result, err := exec.ExecContext(ctx, sql, args...)
 	if err != nil {
-		return 0, errors.Wrap(err, "ormmodel: unable to delete from relationship")
+		return 0, errors.Wrap(err, "ormmodel: unable to delete from relationships")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "ormmodel: failed to get rows affected by delete for relationship")
+		return 0, errors.Wrap(err, "ormmodel: failed to get rows affected by delete for relationships")
 	}
 
 	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
@@ -1268,12 +1268,12 @@ func (q relationshipQuery) DeleteAll(ctx context.Context, exec boil.ContextExecu
 
 	result, err := q.Query.ExecContext(ctx, exec)
 	if err != nil {
-		return 0, errors.Wrap(err, "ormmodel: unable to delete all from relationship")
+		return 0, errors.Wrap(err, "ormmodel: unable to delete all from relationships")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "ormmodel: failed to get rows affected by deleteall for relationship")
+		return 0, errors.Wrap(err, "ormmodel: failed to get rows affected by deleteall for relationships")
 	}
 
 	return rowsAff, nil
@@ -1299,7 +1299,7 @@ func (o RelationshipSlice) DeleteAll(ctx context.Context, exec boil.ContextExecu
 		args = append(args, pkeyArgs...)
 	}
 
-	sql := "DELETE FROM \"relationship\" WHERE " +
+	sql := "DELETE FROM \"relationships\" WHERE " +
 		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, relationshipPrimaryKeyColumns, len(o))
 
 	if boil.IsDebug(ctx) {
@@ -1314,7 +1314,7 @@ func (o RelationshipSlice) DeleteAll(ctx context.Context, exec boil.ContextExecu
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "ormmodel: failed to get rows affected by deleteall for relationship")
+		return 0, errors.Wrap(err, "ormmodel: failed to get rows affected by deleteall for relationships")
 	}
 
 	if len(relationshipAfterDeleteHooks) != 0 {
@@ -1354,7 +1354,7 @@ func (o *RelationshipSlice) ReloadAll(ctx context.Context, exec boil.ContextExec
 		args = append(args, pkeyArgs...)
 	}
 
-	sql := "SELECT \"relationship\".* FROM \"relationship\" WHERE " +
+	sql := "SELECT \"relationships\".* FROM \"relationships\" WHERE " +
 		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, relationshipPrimaryKeyColumns, len(*o))
 
 	q := queries.Raw(sql, args...)
@@ -1372,7 +1372,7 @@ func (o *RelationshipSlice) ReloadAll(ctx context.Context, exec boil.ContextExec
 // RelationshipExists checks if the Relationship row exists.
 func RelationshipExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (bool, error) {
 	var exists bool
-	sql := "select exists(select 1 from \"relationship\" where \"id\"=$1 limit 1)"
+	sql := "select exists(select 1 from \"relationships\" where \"id\"=$1 limit 1)"
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -1383,7 +1383,7 @@ func RelationshipExists(ctx context.Context, exec boil.ContextExecutor, iD int64
 
 	err := row.Scan(&exists)
 	if err != nil {
-		return false, errors.Wrap(err, "ormmodel: unable to check if relationship exists")
+		return false, errors.Wrap(err, "ormmodel: unable to check if relationships exists")
 	}
 
 	return exists, nil

@@ -1,2 +1,2 @@
-DROP TABLE IF EXISTS "user";
-DROP TABLE IF EXISTS relationship;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS relationships;
