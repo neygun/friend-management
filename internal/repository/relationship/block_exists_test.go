@@ -28,7 +28,7 @@ func TestImpl_BlockExists(t *testing.T) {
 		"error: db failed": {
 			givenUserIDs: []int64{1, 2},
 			expDBFailed:  true,
-			expErr:       errors.New("ormmodel: failed to check if relationship exists: sql: database is closed"),
+			expErr:       errors.New("ormmodel: failed to check if relationships exists: sql: database is closed"),
 		},
 	}
 

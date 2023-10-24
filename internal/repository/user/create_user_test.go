@@ -36,7 +36,7 @@ func TestImpl_CreateUser(t *testing.T) {
 				Email: "test@example.com",
 			},
 			expDBFailed: true,
-			expErr:      errors.New("ormmodel: unable to insert into user: sql: database is closed"),
+			expErr:      errors.New("ormmodel: unable to insert into users: sql: database is closed"),
 		},
 	}
 

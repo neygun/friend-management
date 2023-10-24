@@ -43,7 +43,7 @@ func TestImpl_Save(t *testing.T) {
 				Type:        model.RelationshipTypeFriend.ToString(),
 			},
 			expDBFailed: true,
-			expErr:      errors.New("ormmodel: unable to upsert relationship: sql: database is closed"),
+			expErr:      errors.New("ormmodel: unable to upsert relationships: sql: database is closed"),
 		},
 	}
 
