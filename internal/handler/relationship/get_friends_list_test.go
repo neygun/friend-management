@@ -9,8 +9,8 @@ import (
 	"testing"
 
 	"github.com/go-chi/chi"
-	"github.com/neygun/friend-management/internal/handler/relationship/testdata"
 	"github.com/neygun/friend-management/internal/service/relationship"
+	"github.com/neygun/friend-management/pkg/util/test"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
@@ -115,7 +115,7 @@ func TestHandler_GetFriendsList(t *testing.T) {
 			// Then
 			require.Equal(t, tc.expStatusCode, res.Code)
 			if tc.expResponse != "" {
-				expResponse := testdata.LoadTestJSONFile(t, "testdata/"+tc.expResponse)
+				expResponse := test.LoadTestJSONFile(t, "testdata/"+tc.expResponse)
 				require.JSONEq(t, expResponse, res.Body.String())
 			}
 		})

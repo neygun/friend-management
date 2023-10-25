@@ -9,7 +9,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/neygun/friend-management/internal/model"
-	"github.com/neygun/friend-management/internal/repository/user/testdata"
 	"github.com/neygun/friend-management/pkg/db"
 	"github.com/neygun/friend-management/pkg/util/test"
 	"github.com/stretchr/testify/require"
@@ -78,7 +77,7 @@ func TestImpl_GetByCriteria(t *testing.T) {
 					instance = New(dbMock)
 				}
 				if !tc.isEmpty {
-					testdata.LoadTestSQLFile(t, tx, "testdata/get_by_criteria.sql")
+					test.LoadTestSQLFile(t, tx, "testdata/get_by_criteria.sql")
 				}
 
 				// When

@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/neygun/friend-management/internal/repository/relationship/testdata"
 	"github.com/neygun/friend-management/pkg/db"
 	"github.com/neygun/friend-management/pkg/util/test"
 	"github.com/stretchr/testify/require"
@@ -44,7 +43,7 @@ func TestImpl_BlockExists(t *testing.T) {
 					dbMock.Close()
 					instance = New(dbMock)
 				}
-				testdata.LoadTestSQLFile(t, tx, "testdata/block_exists.sql")
+				test.LoadTestSQLFile(t, tx, "testdata/block_exists.sql")
 
 				// When
 				result, err := instance.BlockExists(ctx, tc.givenUserIDs)
