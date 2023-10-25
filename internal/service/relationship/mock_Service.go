@@ -38,6 +38,39 @@ func (_m *MockService) CreateFriendConnection(ctx context.Context, friendConnReq
 	return r0, r1
 }
 
+// GetFriendsList provides a mock function with given fields: ctx, getFriendsInput
+func (_m *MockService) GetFriendsList(ctx context.Context, getFriendsInput GetFriendsInput) ([]string, int, error) {
+	ret := _m.Called(ctx, getFriendsInput)
+
+	var r0 []string
+	var r1 int
+	var r2 error
+	if rf, ok := ret.Get(0).(func(context.Context, GetFriendsInput) ([]string, int, error)); ok {
+		return rf(ctx, getFriendsInput)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, GetFriendsInput) []string); ok {
+		r0 = rf(ctx, getFriendsInput)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]string)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, GetFriendsInput) int); ok {
+		r1 = rf(ctx, getFriendsInput)
+	} else {
+		r1 = ret.Get(1).(int)
+	}
+
+	if rf, ok := ret.Get(2).(func(context.Context, GetFriendsInput) error); ok {
+		r2 = rf(ctx, getFriendsInput)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
 // NewMockService creates a new instance of MockService. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMockService(t interface {

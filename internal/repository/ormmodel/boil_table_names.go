@@ -4,9 +4,9 @@
 package ormmodel
 
 var TableNames = struct {
-	Relationship string
-	User         string
+	Relationships string
+	Users         string
 }{
-	Relationship: "relationship",
-	User:         "user",
+	Relationships: "relationships",
+	Users:         "users",
 }

@@ -12,23 +12,23 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestImpl_BlockExists(t *testing.T) {
+func TestImpl_GetFriendsList(t *testing.T) {
 	type args struct {
-		givenUserIDs []int64
-		expDBFailed  bool
-		expRs        bool
-		expErr       error
+		givenID     int64
+		expDBFailed bool
+		expRs       []string
+		expErr      error
 	}
 
 	tcs := map[string]args{
 		"success": {
-			givenUserIDs: []int64{1, 2},
-			expRs:        true,
+			givenID: 1,
+			expRs:   []string{"test2@example.com", "test3@example.com"},
 		},
 		"error: db failed": {
-			givenUserIDs: []int64{1, 2},
-			expDBFailed:  true,
-			expErr:       errors.New("ormmodel: failed to check if relationships exists: sql: database is closed"),
+			givenID:     1,
+			expDBFailed: true,
+			expErr:      errors.New("bind failed to execute query: sql: database is closed"),
 		},
 	}
 
@@ -44,10 +44,10 @@ func TestImpl_BlockExists(t *testing.T) {
 					dbMock.Close()
 					instance = New(dbMock)
 				}
-				testdata.LoadTestSQLFile(t, tx, "testdata/block_exists.sql")
+				testdata.LoadTestSQLFile(t, tx, "testdata/get_friends_list.sql")
 
 				// When
-				result, err := instance.BlockExists(ctx, tc.givenUserIDs)
+				result, err := instance.GetFriendsList(ctx, tc.givenID)
 
 				// Then
 				if tc.expErr != nil {
