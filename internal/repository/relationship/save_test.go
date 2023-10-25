@@ -9,7 +9,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/neygun/friend-management/internal/model"
-	"github.com/neygun/friend-management/internal/repository/relationship/testdata"
 	"github.com/neygun/friend-management/pkg/db"
 	"github.com/neygun/friend-management/pkg/util/test"
 	"github.com/stretchr/testify/require"
@@ -59,7 +58,7 @@ func TestImpl_Save(t *testing.T) {
 					dbMock.Close()
 					instance = New(dbMock)
 				}
-				testdata.LoadTestSQLFile(t, tx, "testdata/save.sql")
+				test.LoadTestSQLFile(t, tx, "testdata/save.sql")
 
 				// When
 				result, err := instance.Save(ctx, tc.givenRelationship)

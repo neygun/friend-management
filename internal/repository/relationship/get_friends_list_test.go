@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/neygun/friend-management/internal/repository/relationship/testdata"
 	"github.com/neygun/friend-management/pkg/db"
 	"github.com/neygun/friend-management/pkg/util/test"
 	"github.com/stretchr/testify/require"
@@ -44,7 +43,7 @@ func TestImpl_GetFriendsList(t *testing.T) {
 					dbMock.Close()
 					instance = New(dbMock)
 				}
-				testdata.LoadTestSQLFile(t, tx, "testdata/get_friends_list.sql")
+				test.LoadTestSQLFile(t, tx, "testdata/get_friends_list.sql")
 
 				// When
 				result, err := instance.GetFriendsList(ctx, tc.givenID)
