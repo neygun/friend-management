@@ -14,6 +14,7 @@ type Repository interface {
 	GetByCriteria(ctx context.Context, filter model.RelationshipFilter) ([]model.Relationship, error)
 	BlockExists(ctx context.Context, userIds []int64) (bool, error)
 	GetFriendsList(ctx context.Context, id int64) ([]string, error)
+	GetCommonFriends(ctx context.Context, user1ID, user2ID int64) ([]string, error)
 }
 
 type repository struct {

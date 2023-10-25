@@ -13,6 +13,7 @@ func InitRouter(r *chi.Mux, userHandler user.Handler, relationshipHandler relati
 	r.Post("/users", userHandler.CreateUser())
 	r.Post("/friends", relationshipHandler.CreateFriendConnection())
 	r.Post("/friends/list", relationshipHandler.GetFriendsList())
+	r.Post("/friends/common", relationshipHandler.GetCommonFriends())
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("root."))
