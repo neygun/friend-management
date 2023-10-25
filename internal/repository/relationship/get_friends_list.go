@@ -3,6 +3,8 @@ package relationship
 import (
 	"context"
 
+	"github.com/neygun/friend-management/internal/model"
+	"github.com/neygun/friend-management/internal/repository/ormmodel"
 	"github.com/volatiletech/sqlboiler/queries"
 )
 
@@ -13,22 +15,24 @@ func (r repository) GetFriendsList(ctx context.Context, id int64) ([]string, err
 	}
 	var rs []Result
 	err := queries.Raw(`
-		SELECT u.email
-		FROM relationships r INNER JOIN users u ON u.id=r.target_id
-		WHERE requestor_id=$1 AND "type"='FRIEND'
+		SELECT `+ormmodel.UserColumns.Email+
+		` FROM `+ormmodel.TableNames.Relationships+
+		` INNER JOIN `+ormmodel.TableNames.Users+` ON `+ormmodel.TableNames.Users+`.`+ormmodel.UserColumns.ID+`=`+ormmodel.RelationshipColumns.TargetID+
+		` WHERE `+ormmodel.RelationshipColumns.RequestorID+`=$1 AND `+ormmodel.RelationshipColumns.Type+`=$2
 		UNION
-		SELECT u.email
-		FROM relationships r INNER JOIN users u ON u.id=r.requestor_id
-		WHERE target_id=$2 AND "type"='FRIEND'
-	`, id, id).Bind(ctx, r.db, &rs)
+		SELECT `+ormmodel.UserColumns.Email+
+		` FROM `+ormmodel.TableNames.Relationships+
+		` INNER JOIN `+ormmodel.TableNames.Users+` ON `+ormmodel.TableNames.Users+`.`+ormmodel.UserColumns.ID+`=`+ormmodel.RelationshipColumns.RequestorID+
+		` WHERE `+ormmodel.RelationshipColumns.TargetID+`=$1 AND `+ormmodel.RelationshipColumns.Type+`=$2
+	`, id, model.RelationshipTypeFriend.ToString()).Bind(ctx, r.db, &rs)
 
 	if err != nil {
 		return nil, err
 	}
 
-	var emails []string
-	for _, v := range rs {
-		emails = append(emails, v.Email)
+	emails := make([]string, len(rs))
+	for i, v := range rs {
+		emails[i] = v.Email
 	}
 
 	return emails, nil
