@@ -8,6 +8,17 @@ import (
 	"github.com/volatiletech/sqlboiler/queries"
 )
 
+// SELECT email
+// FROM  relationships r1
+// INNER JOIN relationships r2 ON r1.target_id =r2.target_id
+// INNER JOIN users ON users.id=r1.target_id
+// WHERE r1.requestor_id=$id1 AND r1."type" ='FRIEND' AND r2.requestor_id=$id2 AND r2."type" ='FRIEND'
+// UNION
+// SELECT email
+// FROM  relationships r1
+// INNER JOIN relationships r2 ON r1.requestor_id=r2.requestor_id
+// INNER JOIN users ON users.id=r1.requestor_id
+// WHERE r1.target_id =$id1 AND r1."type" ='FRIEND' AND r2.target_id =$id2 AND r2."type" ='FRIEND'
 // GetCommonFriends returns the common friends list between user1 and user2
 func (r repository) GetCommonFriends(ctx context.Context, user1ID, user2ID int64) ([]string, error) {
 	type Result struct {
