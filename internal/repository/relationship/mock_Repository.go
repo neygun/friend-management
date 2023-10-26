@@ -64,6 +64,32 @@ func (_m *MockRepository) GetByCriteria(ctx context.Context, filter model.Relati
 	return r0, r1
 }
 
+// GetCommonFriends provides a mock function with given fields: ctx, user1ID, user2ID
+func (_m *MockRepository) GetCommonFriends(ctx context.Context, user1ID int64, user2ID int64) ([]string, error) {
+	ret := _m.Called(ctx, user1ID, user2ID)
+
+	var r0 []string
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, int64) ([]string, error)); ok {
+		return rf(ctx, user1ID, user2ID)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int64, int64) []string); ok {
+		r0 = rf(ctx, user1ID, user2ID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]string)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int64, int64) error); ok {
+		r1 = rf(ctx, user1ID, user2ID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetFriendsList provides a mock function with given fields: ctx, id
 func (_m *MockRepository) GetFriendsList(ctx context.Context, id int64) ([]string, error) {
 	ret := _m.Called(ctx, id)

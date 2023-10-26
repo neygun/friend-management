@@ -12,6 +12,7 @@ import (
 type Service interface {
 	CreateFriendConnection(ctx context.Context, friendConnReq FriendConnectionInput) (model.Relationship, error)
 	GetFriendsList(ctx context.Context, getFriendsInput GetFriendsInput) ([]string, int, error)
+	GetCommonFriends(ctx context.Context, getCommonFriendsInput GetCommonFriendsInput) ([]string, int, error)
 }
 
 type service struct {
