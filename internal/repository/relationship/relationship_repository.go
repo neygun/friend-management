@@ -16,6 +16,7 @@ type Repository interface {
 	GetFriendsList(ctx context.Context, id int64) ([]string, error)
 	GetCommonFriends(ctx context.Context, user1ID, user2ID int64) ([]string, error)
 	Create(ctx context.Context, relationship model.Relationship) (model.Relationship, error)
+	Update(ctx context.Context, relationship model.Relationship) (model.Relationship, error)
 }
 
 type repository struct {

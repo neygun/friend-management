@@ -25,13 +25,34 @@ func (s service) CreateSubscription(ctx context.Context, createSubscriptionInput
 		return model.Relationship{}, ErrUserNotFound
 	}
 
-	var requestorID, targetID int64
+	requestorID, targetID := users[1].ID, users[0].ID
 	if users[0].Email == createSubscriptionInput.Requestor {
-		requestorID = users[0].ID
-		targetID = users[1].ID
-	} else {
-		requestorID = users[1].ID
-		targetID = users[0].ID
+		requestorID, targetID = users[0].ID, users[1].ID
+	}
+
+	// get relationships
+	relationships, err := s.relationshipRepo.GetByCriteria(ctx, model.RelationshipFilter{
+		RequestorID: requestorID,
+		TargetID:    targetID})
+	if err != nil {
+		return model.Relationship{}, err
+	}
+
+	for _, r := range relationships {
+		// if subscription already exists
+		if r.Type == model.RelationshipTypeSubscribe.ToString() {
+			return model.Relationship{}, ErrSubscriptionExists
+		}
+
+		// if block exists
+		if r.Type == model.RelationshipTypeBlock.ToString() {
+			r.Type = model.RelationshipTypeSubscribe.ToString()
+			subscription, err := s.relationshipRepo.Update(ctx, r)
+			if err != nil {
+				return model.Relationship{}, err
+			}
+			return subscription, nil
+		}
 	}
 
 	// create subscription

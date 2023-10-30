@@ -8,20 +8,12 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
-// Create creates a relationship
-func (r repository) Create(ctx context.Context, relationship model.Relationship) (model.Relationship, error) {
-	newID, err := r.idsnf.NextID()
+// Update updates a relationship
+func (r repository) Update(ctx context.Context, relationship model.Relationship) (model.Relationship, error) {
+	rel, _ := ormmodel.FindRelationship(ctx, r.db, relationship.ID)
+	rel.Type = relationship.Type
+	_, err := rel.Update(ctx, r.db, boil.Infer())
 	if err != nil {
-		return model.Relationship{}, err
-	}
-	rel := ormmodel.Relationship{
-		ID:          int64(newID),
-		RequestorID: relationship.RequestorID,
-		TargetID:    relationship.TargetID,
-		Type:        relationship.Type,
-	}
-
-	if err := rel.Insert(ctx, r.db, boil.Infer()); err != nil {
 		return model.Relationship{}, err
 	}
 

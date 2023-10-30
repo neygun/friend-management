@@ -8,7 +8,7 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-// GetByFilter gets a relationship by filter
+// GetByCriteria gets a relationship by criteria
 func (r repository) GetByCriteria(ctx context.Context, filter model.RelationshipFilter) ([]model.Relationship, error) {
 
 	var qms []qm.QueryMod
