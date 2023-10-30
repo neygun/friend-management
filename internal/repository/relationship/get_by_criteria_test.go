@@ -14,35 +14,51 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestImpl_Create(t *testing.T) {
+func TestImpl_GetByCriteria(t *testing.T) {
 	type args struct {
-		givenRelationship model.Relationship
-		expDBFailed       bool
-		expRs             model.Relationship
-		expErr            error
+		givenFilter model.RelationshipFilter
+		isEmpty     bool
+		expDBFailed bool
+		expRs       []model.Relationship
+		expErr      error
 	}
 
 	tcs := map[string]args{
 		"success": {
-			givenRelationship: model.Relationship{
+			givenFilter: model.RelationshipFilter{
 				RequestorID: 1,
 				TargetID:    2,
-				Type:        model.RelationshipTypeSubscribe.ToString(),
 			},
-			expRs: model.Relationship{
-				RequestorID: 1,
-				TargetID:    2,
-				Type:        model.RelationshipTypeSubscribe.ToString(),
+			expRs: []model.Relationship{
+				{
+					ID:          1,
+					RequestorID: 1,
+					TargetID:    2,
+					Type:        model.RelationshipTypeFriend.ToString(),
+				},
+				{
+					ID:          2,
+					RequestorID: 1,
+					TargetID:    2,
+					Type:        model.RelationshipTypeSubscribe.ToString(),
+				},
 			},
 		},
-		"error: db failed": {
-			givenRelationship: model.Relationship{
+		"empty": {
+			givenFilter: model.RelationshipFilter{
 				RequestorID: 1,
 				TargetID:    2,
-				Type:        model.RelationshipTypeSubscribe.ToString(),
+			},
+			isEmpty: true,
+			expRs:   []model.Relationship{},
+		},
+		"error: db failed": {
+			givenFilter: model.RelationshipFilter{
+				RequestorID: 1,
+				TargetID:    2,
 			},
 			expDBFailed: true,
-			expErr:      errors.New("ormmodel: unable to insert into relationships: sql: database is closed"),
+			expErr:      errors.New("ormmodel: failed to assign all query results to Relationship slice: bind failed to execute query: sql: database is closed"),
 		},
 	}
 
@@ -58,23 +74,22 @@ func TestImpl_Create(t *testing.T) {
 					dbMock.Close()
 					instance = New(dbMock)
 				}
-				test.LoadTestSQLFile(t, tx, "testdata/create.sql")
+				if !tc.isEmpty {
+					test.LoadTestSQLFile(t, tx, "testdata/get_by_criteria.sql")
+				}
 
 				// When
-				result, err := instance.Create(ctx, tc.givenRelationship)
+				result, err := instance.GetByCriteria(ctx, tc.givenFilter)
 
 				// Then
 				if tc.expErr != nil {
 					require.EqualError(t, err, tc.expErr.Error())
 				} else {
 					require.NoError(t, err)
-					require.NotZero(t, result.ID)
-					require.NotZero(t, result.CreatedAt)
-					require.NotZero(t, result.UpdatedAt)
 					if !cmp.Equal(tc.expRs, result,
-						cmpopts.IgnoreFields(model.Relationship{}, "ID", "CreatedAt", "UpdatedAt")) {
+						cmpopts.IgnoreFields(model.Relationship{}, "CreatedAt", "UpdatedAt")) {
 						t.Errorf("\n order mismatched. \n expected: %+v \n got: %+v \n diff: %+v", tc.expRs, result,
-							cmp.Diff(tc.expRs, result, cmpopts.IgnoreFields(model.Relationship{}, "ID", "CreatedAt", "UpdatedAt")))
+							cmp.Diff(tc.expRs, result, cmpopts.IgnoreFields(model.Relationship{}, "CreatedAt", "UpdatedAt")))
 						t.FailNow()
 					}
 				}

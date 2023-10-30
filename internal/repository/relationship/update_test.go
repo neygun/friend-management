@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestImpl_Create(t *testing.T) {
+func TestImpl_Update(t *testing.T) {
 	type args struct {
 		givenRelationship model.Relationship
 		expDBFailed       bool
@@ -25,11 +25,13 @@ func TestImpl_Create(t *testing.T) {
 	tcs := map[string]args{
 		"success": {
 			givenRelationship: model.Relationship{
+				ID:          1,
 				RequestorID: 1,
 				TargetID:    2,
 				Type:        model.RelationshipTypeSubscribe.ToString(),
 			},
 			expRs: model.Relationship{
+				ID:          1,
 				RequestorID: 1,
 				TargetID:    2,
 				Type:        model.RelationshipTypeSubscribe.ToString(),
@@ -37,12 +39,13 @@ func TestImpl_Create(t *testing.T) {
 		},
 		"error: db failed": {
 			givenRelationship: model.Relationship{
+				ID:          1,
 				RequestorID: 1,
 				TargetID:    2,
 				Type:        model.RelationshipTypeSubscribe.ToString(),
 			},
 			expDBFailed: true,
-			expErr:      errors.New("ormmodel: unable to insert into relationships: sql: database is closed"),
+			expErr:      errors.New("ormmodel: unable to select from relationships: bind failed to execute query: sql: database is closed"),
 		},
 	}
 
@@ -58,10 +61,10 @@ func TestImpl_Create(t *testing.T) {
 					dbMock.Close()
 					instance = New(dbMock)
 				}
-				test.LoadTestSQLFile(t, tx, "testdata/create.sql")
+				test.LoadTestSQLFile(t, tx, "testdata/update.sql")
 
 				// When
-				result, err := instance.Create(ctx, tc.givenRelationship)
+				result, err := instance.Update(ctx, tc.givenRelationship)
 
 				// Then
 				if tc.expErr != nil {
@@ -72,9 +75,9 @@ func TestImpl_Create(t *testing.T) {
 					require.NotZero(t, result.CreatedAt)
 					require.NotZero(t, result.UpdatedAt)
 					if !cmp.Equal(tc.expRs, result,
-						cmpopts.IgnoreFields(model.Relationship{}, "ID", "CreatedAt", "UpdatedAt")) {
+						cmpopts.IgnoreFields(model.Relationship{}, "CreatedAt", "UpdatedAt")) {
 						t.Errorf("\n order mismatched. \n expected: %+v \n got: %+v \n diff: %+v", tc.expRs, result,
-							cmp.Diff(tc.expRs, result, cmpopts.IgnoreFields(model.Relationship{}, "ID", "CreatedAt", "UpdatedAt")))
+							cmp.Diff(tc.expRs, result, cmpopts.IgnoreFields(model.Relationship{}, "CreatedAt", "UpdatedAt")))
 						t.FailNow()
 					}
 				}

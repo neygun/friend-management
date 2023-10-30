@@ -70,6 +70,19 @@ func TestHandler_CreateSubscription(t *testing.T) {
 			expStatusCode: http.StatusBadRequest,
 			expResponse:   "user_not_found.json",
 		},
+		"err - subscription exists": {
+			givenRequest: `{"requestor":"test1@example.com","target":"test2@example.com"}`,
+			mockCreateSubscriptionService: mockCreateSubscriptionService{
+				expCall: true,
+				input: relationship.CreateSubscriptionInput{
+					Requestor: "test1@example.com",
+					Target:    "test2@example.com",
+				},
+				err: relationship.ErrSubscriptionExists,
+			},
+			expStatusCode: http.StatusBadRequest,
+			expResponse:   "subscription_exists.json",
+		},
 		"service error": {
 			givenRequest: `{"requestor":"test1@example.com","target":"test2@example.com"}`,
 			mockCreateSubscriptionService: mockCreateSubscriptionService{

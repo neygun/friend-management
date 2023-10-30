@@ -13,10 +13,24 @@ import (
 )
 
 func TestController_CreateSubscription(t *testing.T) {
-	type mockGetByCriteriaRepo struct {
+	type mockGetByCriteriaUserRepo struct {
 		expCall bool
 		input   model.UserFilter
 		output  []model.User
+		err     error
+	}
+
+	type mockGetByCriteriaRelationshipRepo struct {
+		expCall bool
+		input   model.RelationshipFilter
+		output  []model.Relationship
+		err     error
+	}
+
+	type mockUpdateRepo struct {
+		expCall bool
+		input   model.Relationship
+		output  model.Relationship
 		err     error
 	}
 
@@ -28,11 +42,13 @@ func TestController_CreateSubscription(t *testing.T) {
 	}
 
 	type args struct {
-		givenCreateSubscriptionInput CreateSubscriptionInput
-		mockGetByCriteriaRepo        mockGetByCriteriaRepo
-		mockCreateRepo               mockCreateRepo
-		expRs                        model.Relationship
-		expErr                       error
+		givenCreateSubscriptionInput      CreateSubscriptionInput
+		mockGetByCriteriaUserRepo         mockGetByCriteriaUserRepo
+		mockGetByCriteriaRelationshipRepo mockGetByCriteriaRelationshipRepo
+		mockUpdateRepo                    mockUpdateRepo
+		mockCreateRepo                    mockCreateRepo
+		expRs                             model.Relationship
+		expErr                            error
 	}
 
 	tcs := map[string]args{
@@ -41,7 +57,7 @@ func TestController_CreateSubscription(t *testing.T) {
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
-			mockGetByCriteriaRepo: mockGetByCriteriaRepo{
+			mockGetByCriteriaUserRepo: mockGetByCriteriaUserRepo{
 				expCall: true,
 				input: model.UserFilter{
 					Emails: []string{
@@ -58,29 +74,12 @@ func TestController_CreateSubscription(t *testing.T) {
 			},
 			expErr: ErrUserNotFound,
 		},
-		"err - GetByCriteria": {
+		"err - subscription exists": {
 			givenCreateSubscriptionInput: CreateSubscriptionInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
-			mockGetByCriteriaRepo: mockGetByCriteriaRepo{
-				expCall: true,
-				input: model.UserFilter{
-					Emails: []string{
-						"test1@example.com",
-						"test2@example.com",
-					},
-				},
-				err: errors.New("GetByCriteria error"),
-			},
-			expErr: errors.New("GetByCriteria error"),
-		},
-		"err - Create": {
-			givenCreateSubscriptionInput: CreateSubscriptionInput{
-				Requestor: "test1@example.com",
-				Target:    "test2@example.com",
-			},
-			mockGetByCriteriaRepo: mockGetByCriteriaRepo{
+			mockGetByCriteriaUserRepo: mockGetByCriteriaUserRepo{
 				expCall: true,
 				input: model.UserFilter{
 					Emails: []string{
@@ -96,6 +95,164 @@ func TestController_CreateSubscription(t *testing.T) {
 					{
 						ID:    2,
 						Email: "test2@example.com",
+					},
+				},
+			},
+			mockGetByCriteriaRelationshipRepo: mockGetByCriteriaRelationshipRepo{
+				expCall: true,
+				input: model.RelationshipFilter{
+					RequestorID: 1,
+					TargetID:    2,
+				},
+				output: []model.Relationship{
+					{
+						ID:          1,
+						RequestorID: 1,
+						TargetID:    2,
+						Type:        model.RelationshipTypeSubscribe.ToString(),
+					},
+				},
+			},
+			expErr: ErrSubscriptionExists,
+		},
+		"err - user.GetByCriteria": {
+			givenCreateSubscriptionInput: CreateSubscriptionInput{
+				Requestor: "test1@example.com",
+				Target:    "test2@example.com",
+			},
+			mockGetByCriteriaUserRepo: mockGetByCriteriaUserRepo{
+				expCall: true,
+				input: model.UserFilter{
+					Emails: []string{
+						"test1@example.com",
+						"test2@example.com",
+					},
+				},
+				err: errors.New("user.GetByCriteria error"),
+			},
+			expErr: errors.New("user.GetByCriteria error"),
+		},
+		"err - relationship.GetByCriteria": {
+			givenCreateSubscriptionInput: CreateSubscriptionInput{
+				Requestor: "test1@example.com",
+				Target:    "test2@example.com",
+			},
+			mockGetByCriteriaUserRepo: mockGetByCriteriaUserRepo{
+				expCall: true,
+				input: model.UserFilter{
+					Emails: []string{
+						"test1@example.com",
+						"test2@example.com",
+					},
+				},
+				output: []model.User{
+					{
+						ID:    1,
+						Email: "test1@example.com",
+					},
+					{
+						ID:    2,
+						Email: "test2@example.com",
+					},
+				},
+			},
+			mockGetByCriteriaRelationshipRepo: mockGetByCriteriaRelationshipRepo{
+				expCall: true,
+				input: model.RelationshipFilter{
+					RequestorID: 1,
+					TargetID:    2,
+				},
+				err: errors.New("relationship.GetByCriteria error"),
+			},
+			expErr: errors.New("relationship.GetByCriteria error"),
+		},
+		"err - Update": {
+			givenCreateSubscriptionInput: CreateSubscriptionInput{
+				Requestor: "test1@example.com",
+				Target:    "test2@example.com",
+			},
+			mockGetByCriteriaUserRepo: mockGetByCriteriaUserRepo{
+				expCall: true,
+				input: model.UserFilter{
+					Emails: []string{
+						"test1@example.com",
+						"test2@example.com",
+					},
+				},
+				output: []model.User{
+					{
+						ID:    1,
+						Email: "test1@example.com",
+					},
+					{
+						ID:    2,
+						Email: "test2@example.com",
+					},
+				},
+			},
+			mockGetByCriteriaRelationshipRepo: mockGetByCriteriaRelationshipRepo{
+				expCall: true,
+				input: model.RelationshipFilter{
+					RequestorID: 1,
+					TargetID:    2,
+				},
+				output: []model.Relationship{
+					{
+						ID:          1,
+						RequestorID: 1,
+						TargetID:    2,
+						Type:        model.RelationshipTypeBlock.ToString(),
+					},
+				},
+			},
+			mockUpdateRepo: mockUpdateRepo{
+				expCall: true,
+				input: model.Relationship{
+					ID:          1,
+					RequestorID: 1,
+					TargetID:    2,
+					Type:        model.RelationshipTypeSubscribe.ToString(),
+				},
+				err: errors.New("Update error"),
+			},
+			expErr: errors.New("Update error"),
+		},
+		"err - Create": {
+			givenCreateSubscriptionInput: CreateSubscriptionInput{
+				Requestor: "test1@example.com",
+				Target:    "test2@example.com",
+			},
+			mockGetByCriteriaUserRepo: mockGetByCriteriaUserRepo{
+				expCall: true,
+				input: model.UserFilter{
+					Emails: []string{
+						"test1@example.com",
+						"test2@example.com",
+					},
+				},
+				output: []model.User{
+					{
+						ID:    1,
+						Email: "test1@example.com",
+					},
+					{
+						ID:    2,
+						Email: "test2@example.com",
+					},
+				},
+			},
+			mockGetByCriteriaRelationshipRepo: mockGetByCriteriaRelationshipRepo{
+				expCall: true,
+				input: model.RelationshipFilter{
+					RequestorID: 1,
+					TargetID:    2,
+				},
+				output: []model.Relationship{
+					{
+						ID:          1,
+						RequestorID: 1,
+						TargetID:    2,
+						Type:        model.RelationshipTypeFriend.ToString(),
 					},
 				},
 			},
@@ -106,16 +263,16 @@ func TestController_CreateSubscription(t *testing.T) {
 					TargetID:    2,
 					Type:        model.RelationshipTypeSubscribe.ToString(),
 				},
-				err: errors.New("Save error"),
+				err: errors.New("Create error"),
 			},
-			expErr: errors.New("Save error"),
+			expErr: errors.New("Create error"),
 		},
-		"success": {
+		"update success": {
 			givenCreateSubscriptionInput: CreateSubscriptionInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
-			mockGetByCriteriaRepo: mockGetByCriteriaRepo{
+			mockGetByCriteriaUserRepo: mockGetByCriteriaUserRepo{
 				expCall: true,
 				input: model.UserFilter{
 					Emails: []string{
@@ -131,6 +288,82 @@ func TestController_CreateSubscription(t *testing.T) {
 					{
 						ID:    2,
 						Email: "test2@example.com",
+					},
+				},
+			},
+			mockGetByCriteriaRelationshipRepo: mockGetByCriteriaRelationshipRepo{
+				expCall: true,
+				input: model.RelationshipFilter{
+					RequestorID: 1,
+					TargetID:    2,
+				},
+				output: []model.Relationship{
+					{
+						ID:          1,
+						RequestorID: 1,
+						TargetID:    2,
+						Type:        model.RelationshipTypeBlock.ToString(),
+					},
+				},
+			},
+			mockUpdateRepo: mockUpdateRepo{
+				expCall: true,
+				input: model.Relationship{
+					ID:          1,
+					RequestorID: 1,
+					TargetID:    2,
+					Type:        model.RelationshipTypeSubscribe.ToString(),
+				},
+				output: model.Relationship{
+					ID:          1,
+					RequestorID: 1,
+					TargetID:    2,
+					Type:        model.RelationshipTypeSubscribe.ToString(),
+				},
+			},
+			expRs: model.Relationship{
+				ID:          1,
+				RequestorID: 1,
+				TargetID:    2,
+				Type:        model.RelationshipTypeSubscribe.ToString(),
+			},
+		},
+		"create success": {
+			givenCreateSubscriptionInput: CreateSubscriptionInput{
+				Requestor: "test1@example.com",
+				Target:    "test2@example.com",
+			},
+			mockGetByCriteriaUserRepo: mockGetByCriteriaUserRepo{
+				expCall: true,
+				input: model.UserFilter{
+					Emails: []string{
+						"test1@example.com",
+						"test2@example.com",
+					},
+				},
+				output: []model.User{
+					{
+						ID:    1,
+						Email: "test1@example.com",
+					},
+					{
+						ID:    2,
+						Email: "test2@example.com",
+					},
+				},
+			},
+			mockGetByCriteriaRelationshipRepo: mockGetByCriteriaRelationshipRepo{
+				expCall: true,
+				input: model.RelationshipFilter{
+					RequestorID: 1,
+					TargetID:    2,
+				},
+				output: []model.Relationship{
+					{
+						ID:          1,
+						RequestorID: 1,
+						TargetID:    2,
+						Type:        model.RelationshipTypeFriend.ToString(),
 					},
 				},
 			},
@@ -165,10 +398,22 @@ func TestController_CreateSubscription(t *testing.T) {
 			mockRelationshipRepo := relationship.NewMockRepository(t)
 
 			// When
-			if tc.mockGetByCriteriaRepo.expCall {
+			if tc.mockGetByCriteriaUserRepo.expCall {
 				mockUserRepo.ExpectedCalls = []*mock.Call{
-					mockUserRepo.On("GetByCriteria", ctx, tc.mockGetByCriteriaRepo.input).Return(tc.mockGetByCriteriaRepo.output, tc.mockGetByCriteriaRepo.err),
+					mockUserRepo.On("GetByCriteria", ctx, tc.mockGetByCriteriaUserRepo.input).Return(tc.mockGetByCriteriaUserRepo.output, tc.mockGetByCriteriaUserRepo.err),
 				}
+			}
+
+			if tc.mockGetByCriteriaRelationshipRepo.expCall {
+				mockRelationshipRepo.ExpectedCalls = append(mockRelationshipRepo.ExpectedCalls,
+					mockRelationshipRepo.On("GetByCriteria", ctx, tc.mockGetByCriteriaRelationshipRepo.input).Return(tc.mockGetByCriteriaRelationshipRepo.output, tc.mockGetByCriteriaRelationshipRepo.err),
+				)
+			}
+
+			if tc.mockUpdateRepo.expCall {
+				mockRelationshipRepo.ExpectedCalls = append(mockRelationshipRepo.ExpectedCalls,
+					mockRelationshipRepo.On("Update", ctx, tc.mockUpdateRepo.input).Return(tc.mockUpdateRepo.output, tc.mockUpdateRepo.err),
+				)
 			}
 
 			if tc.mockCreateRepo.expCall {
