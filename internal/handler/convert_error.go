@@ -9,7 +9,7 @@ import (
 // ConvertErr converts service errors to handler errors
 func ConvertErr(err error) error {
 	switch err {
-	case relationship.ErrUserNotFound, relationship.ErrSubscriptionExists, relationship.ErrBlockExists:
+	case relationship.ErrUserNotFound, relationship.ErrFriendConnectionExists, relationship.ErrSubscriptionExists, relationship.ErrBlockExists:
 		return HandlerErr{
 			Code:        http.StatusBadRequest,
 			Description: err.Error(),
