@@ -10,10 +10,11 @@ import (
 
 // Update updates a relationship
 func (r repository) Update(ctx context.Context, relationship model.Relationship) (model.Relationship, error) {
-	rel, err := ormmodel.FindRelationship(ctx, r.db, relationship.ID)
+	rel, err := ormmodel.Relationships(ormmodel.RelationshipWhere.ID.EQ(relationship.ID)).One(ctx, r.db)
 	if err != nil {
 		return model.Relationship{}, err
 	}
+
 	rel.Type = relationship.Type
 	_, err = rel.Update(ctx, r.db, boil.Infer())
 	if err != nil {

@@ -41,7 +41,7 @@ func (s service) CreateFriendConnection(ctx context.Context, friendConnInput Fri
 		Type:        model.RelationshipTypeFriend.ToString(),
 	}
 
-	friendConn, err = s.relationshipRepo.Save(ctx, friendConn)
+	friendConn, err = s.relationshipRepo.Create(ctx, friendConn)
 	if err != nil {
 		return model.Relationship{}, err
 	}

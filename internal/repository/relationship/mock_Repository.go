@@ -140,30 +140,6 @@ func (_m *MockRepository) GetFriendsList(ctx context.Context, id int64) ([]strin
 	return r0, r1
 }
 
-// Save provides a mock function with given fields: ctx, relationship
-func (_m *MockRepository) Save(ctx context.Context, relationship model.Relationship) (model.Relationship, error) {
-	ret := _m.Called(ctx, relationship)
-
-	var r0 model.Relationship
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, model.Relationship) (model.Relationship, error)); ok {
-		return rf(ctx, relationship)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, model.Relationship) model.Relationship); ok {
-		r0 = rf(ctx, relationship)
-	} else {
-		r0 = ret.Get(0).(model.Relationship)
-	}
-
-	if rf, ok := ret.Get(1).(func(context.Context, model.Relationship) error); ok {
-		r1 = rf(ctx, relationship)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
 // Update provides a mock function with given fields: ctx, relationship
 func (_m *MockRepository) Update(ctx context.Context, relationship model.Relationship) (model.Relationship, error) {
 	ret := _m.Called(ctx, relationship)

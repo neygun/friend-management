@@ -27,7 +27,7 @@ func TestController_CreateFriendConnection(t *testing.T) {
 		err     error
 	}
 
-	type mockSaveRepo struct {
+	type mockCreateRepo struct {
 		expCall bool
 		input   model.Relationship
 		output  model.Relationship
@@ -38,7 +38,7 @@ func TestController_CreateFriendConnection(t *testing.T) {
 		givenFriendConnInput  FriendConnectionInput
 		mockGetByCriteriaRepo mockGetByCriteriaRepo
 		mockBlockExistsRepo   mockBlockExistsRepo
-		mockSaveRepo          mockSaveRepo
+		mockCreateRepo        mockCreateRepo
 		expRs                 model.Relationship
 		expErr                error
 	}
@@ -153,7 +153,7 @@ func TestController_CreateFriendConnection(t *testing.T) {
 			},
 			expErr: errors.New("BlockExists error"),
 		},
-		"err - Save": {
+		"err - Create": {
 			givenFriendConnInput: FriendConnectionInput{
 				Friends: []string{
 					"test1@example.com",
@@ -184,16 +184,16 @@ func TestController_CreateFriendConnection(t *testing.T) {
 				input:   []int64{1, 2},
 				output:  false,
 			},
-			mockSaveRepo: mockSaveRepo{
+			mockCreateRepo: mockCreateRepo{
 				expCall: true,
 				input: model.Relationship{
 					RequestorID: 1,
 					TargetID:    2,
 					Type:        model.RelationshipTypeFriend.ToString(),
 				},
-				err: errors.New("Save error"),
+				err: errors.New("Create error"),
 			},
-			expErr: errors.New("Save error"),
+			expErr: errors.New("Create error"),
 		},
 		"success": {
 			givenFriendConnInput: FriendConnectionInput{
@@ -226,7 +226,7 @@ func TestController_CreateFriendConnection(t *testing.T) {
 				input:   []int64{1, 2},
 				output:  false,
 			},
-			mockSaveRepo: mockSaveRepo{
+			mockCreateRepo: mockCreateRepo{
 				expCall: true,
 				input: model.Relationship{
 					RequestorID: 1,
@@ -269,9 +269,9 @@ func TestController_CreateFriendConnection(t *testing.T) {
 				)
 			}
 
-			if tc.mockSaveRepo.expCall {
+			if tc.mockCreateRepo.expCall {
 				mockRelationshipRepo.ExpectedCalls = append(mockRelationshipRepo.ExpectedCalls,
-					mockRelationshipRepo.On("Save", ctx, tc.mockSaveRepo.input).Return(tc.mockSaveRepo.output, tc.mockSaveRepo.err),
+					mockRelationshipRepo.On("Create", ctx, tc.mockCreateRepo.input).Return(tc.mockCreateRepo.output, tc.mockCreateRepo.err),
 				)
 			}
 

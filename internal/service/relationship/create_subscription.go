@@ -38,20 +38,21 @@ func (s service) CreateSubscription(ctx context.Context, createSubscriptionInput
 		return model.Relationship{}, err
 	}
 
-	for _, r := range relationships {
-		// if subscription already exists
-		if r.Type == model.RelationshipTypeSubscribe.ToString() {
-			return model.Relationship{}, ErrSubscriptionExists
-		}
+	if checkRelationship(relationships) == model.RelationshipTypeSubscribe {
+		return model.Relationship{}, ErrSubscriptionExists
+	}
 
-		// if block exists
-		if r.Type == model.RelationshipTypeBlock.ToString() {
-			r.Type = model.RelationshipTypeSubscribe.ToString()
-			subscription, err := s.relationshipRepo.Update(ctx, r)
-			if err != nil {
-				return model.Relationship{}, err
+	if checkRelationship(relationships) == model.RelationshipTypeBlock {
+		// find block
+		for _, r := range relationships {
+			if r.Type == model.RelationshipTypeBlock.ToString() {
+				r.Type = model.RelationshipTypeSubscribe.ToString()
+				subscription, err := s.relationshipRepo.Update(ctx, r)
+				if err != nil {
+					return model.Relationship{}, err
+				}
+				return subscription, nil
 			}
-			return subscription, nil
 		}
 	}
 
@@ -68,4 +69,19 @@ func (s service) CreateSubscription(ctx context.Context, createSubscriptionInput
 	}
 
 	return subscription, nil
+}
+
+func checkRelationship(relationships []model.Relationship) model.RelationshipType {
+	for _, r := range relationships {
+		// if subscription exists
+		if r.Type == model.RelationshipTypeSubscribe.ToString() {
+			return model.RelationshipTypeSubscribe
+		}
+
+		// if block exists
+		if r.Type == model.RelationshipTypeBlock.ToString() {
+			return model.RelationshipTypeBlock
+		}
+	}
+	return ""
 }
