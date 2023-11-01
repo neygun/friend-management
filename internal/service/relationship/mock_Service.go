@@ -38,6 +38,30 @@ func (_m *MockService) CreateFriendConnection(ctx context.Context, friendConnReq
 	return r0, r1
 }
 
+// CreateSubscription provides a mock function with given fields: ctx, createSubscriptionInput
+func (_m *MockService) CreateSubscription(ctx context.Context, createSubscriptionInput CreateSubscriptionInput) (model.Relationship, error) {
+	ret := _m.Called(ctx, createSubscriptionInput)
+
+	var r0 model.Relationship
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, CreateSubscriptionInput) (model.Relationship, error)); ok {
+		return rf(ctx, createSubscriptionInput)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, CreateSubscriptionInput) model.Relationship); ok {
+		r0 = rf(ctx, createSubscriptionInput)
+	} else {
+		r0 = ret.Get(0).(model.Relationship)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, CreateSubscriptionInput) error); ok {
+		r1 = rf(ctx, createSubscriptionInput)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetCommonFriends provides a mock function with given fields: ctx, getCommonFriendsInput
 func (_m *MockService) GetCommonFriends(ctx context.Context, getCommonFriendsInput GetCommonFriendsInput) ([]string, int, error) {
 	ret := _m.Called(ctx, getCommonFriendsInput)

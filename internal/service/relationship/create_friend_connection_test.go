@@ -5,6 +5,8 @@ import (
 	"errors"
 	"testing"
 
+	friendErr "github.com/friendsofgo/errors"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/neygun/friend-management/internal/model"
 	"github.com/neygun/friend-management/internal/repository/relationship"
 	"github.com/neygun/friend-management/internal/repository/user"
@@ -27,7 +29,7 @@ func TestController_CreateFriendConnection(t *testing.T) {
 		err     error
 	}
 
-	type mockSaveRepo struct {
+	type mockCreateRepo struct {
 		expCall bool
 		input   model.Relationship
 		output  model.Relationship
@@ -38,7 +40,7 @@ func TestController_CreateFriendConnection(t *testing.T) {
 		givenFriendConnInput  FriendConnectionInput
 		mockGetByCriteriaRepo mockGetByCriteriaRepo
 		mockBlockExistsRepo   mockBlockExistsRepo
-		mockSaveRepo          mockSaveRepo
+		mockCreateRepo        mockCreateRepo
 		expRs                 model.Relationship
 		expErr                error
 	}
@@ -101,6 +103,50 @@ func TestController_CreateFriendConnection(t *testing.T) {
 			},
 			expErr: ErrBlockExists,
 		},
+		"err - friend connection exists": {
+			givenFriendConnInput: FriendConnectionInput{
+				Friends: []string{
+					"test1@example.com",
+					"test2@example.com",
+				},
+			},
+			mockGetByCriteriaRepo: mockGetByCriteriaRepo{
+				expCall: true,
+				input: model.UserFilter{
+					Emails: []string{
+						"test1@example.com",
+						"test2@example.com",
+					},
+				},
+				output: []model.User{
+					{
+						ID:    1,
+						Email: "test1@example.com",
+					},
+					{
+						ID:    2,
+						Email: "test2@example.com",
+					},
+				},
+			},
+			mockBlockExistsRepo: mockBlockExistsRepo{
+				expCall: true,
+				input:   []int64{1, 2},
+				output:  false,
+			},
+			mockCreateRepo: mockCreateRepo{
+				expCall: true,
+				input: model.Relationship{
+					RequestorID: 1,
+					TargetID:    2,
+					Type:        model.RelationshipTypeFriend,
+				},
+				err: friendErr.Wrap(&pgconn.PgError{
+					Code: "23505",
+				}, "ormmodel: unable to insert into relationships"),
+			},
+			expErr: ErrFriendConnectionExists,
+		},
 		"err - GetByCriteria": {
 			givenFriendConnInput: FriendConnectionInput{
 				Friends: []string{
@@ -153,7 +199,7 @@ func TestController_CreateFriendConnection(t *testing.T) {
 			},
 			expErr: errors.New("BlockExists error"),
 		},
-		"err - Save": {
+		"err - Create": {
 			givenFriendConnInput: FriendConnectionInput{
 				Friends: []string{
 					"test1@example.com",
@@ -184,16 +230,16 @@ func TestController_CreateFriendConnection(t *testing.T) {
 				input:   []int64{1, 2},
 				output:  false,
 			},
-			mockSaveRepo: mockSaveRepo{
+			mockCreateRepo: mockCreateRepo{
 				expCall: true,
 				input: model.Relationship{
 					RequestorID: 1,
 					TargetID:    2,
-					Type:        model.RelationshipTypeFriend.ToString(),
+					Type:        model.RelationshipTypeFriend,
 				},
-				err: errors.New("Save error"),
+				err: errors.New("Create error"),
 			},
-			expErr: errors.New("Save error"),
+			expErr: errors.New("Create error"),
 		},
 		"success": {
 			givenFriendConnInput: FriendConnectionInput{
@@ -226,25 +272,25 @@ func TestController_CreateFriendConnection(t *testing.T) {
 				input:   []int64{1, 2},
 				output:  false,
 			},
-			mockSaveRepo: mockSaveRepo{
+			mockCreateRepo: mockCreateRepo{
 				expCall: true,
 				input: model.Relationship{
 					RequestorID: 1,
 					TargetID:    2,
-					Type:        model.RelationshipTypeFriend.ToString(),
+					Type:        model.RelationshipTypeFriend,
 				},
 				output: model.Relationship{
 					ID:          1,
 					RequestorID: 1,
 					TargetID:    2,
-					Type:        model.RelationshipTypeFriend.ToString(),
+					Type:        model.RelationshipTypeFriend,
 				},
 			},
 			expRs: model.Relationship{
 				ID:          1,
 				RequestorID: 1,
 				TargetID:    2,
-				Type:        model.RelationshipTypeFriend.ToString(),
+				Type:        model.RelationshipTypeFriend,
 			},
 		},
 	}
@@ -269,9 +315,9 @@ func TestController_CreateFriendConnection(t *testing.T) {
 				)
 			}
 
-			if tc.mockSaveRepo.expCall {
+			if tc.mockCreateRepo.expCall {
 				mockRelationshipRepo.ExpectedCalls = append(mockRelationshipRepo.ExpectedCalls,
-					mockRelationshipRepo.On("Save", ctx, tc.mockSaveRepo.input).Return(tc.mockSaveRepo.output, tc.mockSaveRepo.err),
+					mockRelationshipRepo.On("Create", ctx, tc.mockCreateRepo.input).Return(tc.mockCreateRepo.output, tc.mockCreateRepo.err),
 				)
 			}
 

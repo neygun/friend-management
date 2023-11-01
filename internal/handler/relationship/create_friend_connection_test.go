@@ -82,6 +82,21 @@ func TestHandler_CreateFriendConnection(t *testing.T) {
 			expStatusCode: http.StatusBadRequest,
 			expResponse:   "block_exists.json",
 		},
+		"err - friend connection exists": {
+			givenRequest: `{"friends":["test1@example.com", "test2@example.com"]}`,
+			mockCreateFriendConnService: mockCreateFriendConnectionService{
+				expCall: true,
+				input: relationship.FriendConnectionInput{
+					Friends: []string{
+						"test1@example.com",
+						"test2@example.com",
+					},
+				},
+				err: relationship.ErrFriendConnectionExists,
+			},
+			expStatusCode: http.StatusBadRequest,
+			expResponse:   "friend_connection_exists.json",
+		},
 		"service error": {
 			givenRequest: `{"friends":["test1@example.com", "test2@example.com"]}`,
 			mockCreateFriendConnService: mockCreateFriendConnectionService{

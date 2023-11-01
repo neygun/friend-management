@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/neygun/friend-management/internal/model"
+	"github.com/neygun/friend-management/pkg/util"
 )
 
 // FriendConnectionInput represents the input from request to create friend connection
@@ -38,11 +39,14 @@ func (s service) CreateFriendConnection(ctx context.Context, friendConnInput Fri
 	friendConn := model.Relationship{
 		RequestorID: users[0].ID,
 		TargetID:    users[1].ID,
-		Type:        model.RelationshipTypeFriend.ToString(),
+		Type:        model.RelationshipTypeFriend,
 	}
 
-	friendConn, err = s.relationshipRepo.Save(ctx, friendConn)
+	friendConn, err = s.relationshipRepo.Create(ctx, friendConn)
 	if err != nil {
+		if util.UniqueViolation.Is(err) {
+			return model.Relationship{}, ErrFriendConnectionExists
+		}
 		return model.Relationship{}, err
 	}
 

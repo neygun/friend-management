@@ -9,7 +9,7 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-// GetByFilter gets users by filter
+// GetByCriteria gets users by criteria
 func (r repository) GetByCriteria(ctx context.Context, filter model.UserFilter) ([]model.User, error) {
 	var qms []qm.QueryMod
 
