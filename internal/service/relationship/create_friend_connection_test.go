@@ -6,10 +6,10 @@ import (
 	"testing"
 
 	friendErr "github.com/friendsofgo/errors"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/neygun/friend-management/internal/model"
 	"github.com/neygun/friend-management/internal/repository/relationship"
 	"github.com/neygun/friend-management/internal/repository/user"
-	"github.com/neygun/friend-management/pkg/util"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
@@ -141,7 +141,9 @@ func TestController_CreateFriendConnection(t *testing.T) {
 					TargetID:    2,
 					Type:        model.RelationshipTypeFriend,
 				},
-				err: friendErr.Wrap(util.UniqueViolation, "friend connection exists"),
+				err: friendErr.Wrap(&pgconn.PgError{
+					Code: "23505",
+				}, "ormmodel: unable to insert into relationships"),
 			},
 			expErr: ErrFriendConnectionExists,
 		},

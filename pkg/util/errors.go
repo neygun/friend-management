@@ -29,10 +29,7 @@ var (
 func (pe pgError) Is(err error) bool {
 	var pgErr *pgconn.PgError
 
-	fmt.Printf("friend %+v\n", friendErr.Cause(err))
-
-	if friendErr.As(friendErr.Cause(err), pgErr) {
-		fmt.Println("abc", *pgErr)
+	if friendErr.As(friendErr.Cause(err), &pgErr) {
 		return pgErr.Code == pe.Code
 	}
 

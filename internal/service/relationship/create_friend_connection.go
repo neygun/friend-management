@@ -2,7 +2,6 @@ package relationship
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/neygun/friend-management/internal/model"
 	"github.com/neygun/friend-management/pkg/util"
@@ -45,7 +44,6 @@ func (s service) CreateFriendConnection(ctx context.Context, friendConnInput Fri
 
 	friendConn, err = s.relationshipRepo.Create(ctx, friendConn)
 	if err != nil {
-		fmt.Printf("===========%+v===============", err)
 		if util.UniqueViolation.Is(err) {
 			return model.Relationship{}, ErrFriendConnectionExists
 		}
