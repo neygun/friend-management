@@ -39,7 +39,7 @@ func (s service) CreateFriendConnection(ctx context.Context, friendConnInput Fri
 	friendConn := model.Relationship{
 		RequestorID: users[0].ID,
 		TargetID:    users[1].ID,
-		Type:        model.RelationshipTypeFriend.ToString(),
+		Type:        model.RelationshipTypeFriend,
 	}
 
 	friendConn, err = s.relationshipRepo.Create(ctx, friendConn)

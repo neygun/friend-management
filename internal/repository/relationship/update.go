@@ -15,7 +15,7 @@ func (r repository) Update(ctx context.Context, relationship model.Relationship)
 		return model.Relationship{}, err
 	}
 
-	rel.Type = relationship.Type
+	rel.Type = relationship.Type.ToString()
 	_, err = rel.Update(ctx, r.db, boil.Infer())
 	if err != nil {
 		return model.Relationship{}, err
@@ -25,7 +25,7 @@ func (r repository) Update(ctx context.Context, relationship model.Relationship)
 		ID:          rel.ID,
 		RequestorID: rel.RequestorID,
 		TargetID:    rel.TargetID,
-		Type:        rel.Type,
+		Type:        model.RelationshipType(rel.Type),
 		CreatedAt:   rel.CreatedAt,
 		UpdatedAt:   rel.UpdatedAt,
 	}, nil

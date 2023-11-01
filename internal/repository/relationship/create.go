@@ -18,7 +18,7 @@ func (r repository) Create(ctx context.Context, relationship model.Relationship)
 		ID:          int64(newID),
 		RequestorID: relationship.RequestorID,
 		TargetID:    relationship.TargetID,
-		Type:        relationship.Type,
+		Type:        relationship.Type.ToString(),
 	}
 
 	if err := rel.Insert(ctx, r.db, boil.Infer()); err != nil {
@@ -29,7 +29,7 @@ func (r repository) Create(ctx context.Context, relationship model.Relationship)
 		ID:          rel.ID,
 		RequestorID: rel.RequestorID,
 		TargetID:    rel.TargetID,
-		Type:        rel.Type,
+		Type:        model.RelationshipType(rel.Type),
 		CreatedAt:   rel.CreatedAt,
 		UpdatedAt:   rel.UpdatedAt,
 	}, nil

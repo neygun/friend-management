@@ -7,7 +7,7 @@ type Relationship struct {
 	ID          int64
 	RequestorID int64
 	TargetID    int64
-	Type        string
+	Type        RelationshipType
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

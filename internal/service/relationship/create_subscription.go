@@ -38,19 +38,19 @@ func (s service) CreateSubscription(ctx context.Context, createSubscriptionInput
 		return model.Relationship{}, err
 	}
 
-	rels := make(map[string]model.Relationship)
+	rels := make(map[model.RelationshipType]model.Relationship)
 	for _, r := range relationships {
 		rels[r.Type] = r
 	}
 
 	switch {
 	// subscription exists
-	case containsKey(rels, model.RelationshipTypeSubscribe.ToString()):
+	case containsKey(rels, model.RelationshipTypeSubscribe):
 		return model.Relationship{}, ErrSubscriptionExists
 	// block exists
-	case containsKey(rels, model.RelationshipTypeBlock.ToString()):
-		r := rels[model.RelationshipTypeBlock.ToString()]
-		r.Type = model.RelationshipTypeSubscribe.ToString()
+	case containsKey(rels, model.RelationshipTypeBlock):
+		r := rels[model.RelationshipTypeBlock]
+		r.Type = model.RelationshipTypeSubscribe
 		subscription, err := s.relationshipRepo.Update(ctx, r)
 		if err != nil {
 			return model.Relationship{}, err
@@ -61,7 +61,7 @@ func (s service) CreateSubscription(ctx context.Context, createSubscriptionInput
 		subscription := model.Relationship{
 			RequestorID: requestorID,
 			TargetID:    targetID,
-			Type:        model.RelationshipTypeSubscribe.ToString(),
+			Type:        model.RelationshipTypeSubscribe,
 		}
 		subscription, err = s.relationshipRepo.Create(ctx, subscription)
 		if err != nil {
@@ -72,7 +72,7 @@ func (s service) CreateSubscription(ctx context.Context, createSubscriptionInput
 
 }
 
-func containsKey(m map[string]model.Relationship, key string) bool {
+func containsKey(m map[model.RelationshipType]model.Relationship, key model.RelationshipType) bool {
 	_, exists := m[key]
 	return exists
 }
