@@ -28,13 +28,13 @@ func TestImpl_Update(t *testing.T) {
 				ID:          1,
 				RequestorID: 1,
 				TargetID:    2,
-				Type:        model.RelationshipTypeSubscribe.ToString(),
+				Type:        model.RelationshipTypeSubscribe,
 			},
 			expRs: model.Relationship{
 				ID:          1,
 				RequestorID: 1,
 				TargetID:    2,
-				Type:        model.RelationshipTypeSubscribe.ToString(),
+				Type:        model.RelationshipTypeSubscribe,
 			},
 		},
 		"error: db failed": {
@@ -42,10 +42,10 @@ func TestImpl_Update(t *testing.T) {
 				ID:          1,
 				RequestorID: 1,
 				TargetID:    2,
-				Type:        model.RelationshipTypeSubscribe.ToString(),
+				Type:        model.RelationshipTypeSubscribe,
 			},
 			expDBFailed: true,
-			expErr:      errors.New("ormmodel: unable to select from relationships: bind failed to execute query: sql: database is closed"),
+			expErr:      errors.New("ormmodel: failed to execute a one query for relationships: bind failed to execute query: sql: database is closed"),
 		},
 	}
 

@@ -5,9 +5,11 @@ import (
 	"errors"
 	"testing"
 
+	friendErr "github.com/friendsofgo/errors"
 	"github.com/neygun/friend-management/internal/model"
 	"github.com/neygun/friend-management/internal/repository/relationship"
 	"github.com/neygun/friend-management/internal/repository/user"
+	"github.com/neygun/friend-management/pkg/util"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
@@ -101,6 +103,48 @@ func TestController_CreateFriendConnection(t *testing.T) {
 			},
 			expErr: ErrBlockExists,
 		},
+		"err - friend connection exists": {
+			givenFriendConnInput: FriendConnectionInput{
+				Friends: []string{
+					"test1@example.com",
+					"test2@example.com",
+				},
+			},
+			mockGetByCriteriaRepo: mockGetByCriteriaRepo{
+				expCall: true,
+				input: model.UserFilter{
+					Emails: []string{
+						"test1@example.com",
+						"test2@example.com",
+					},
+				},
+				output: []model.User{
+					{
+						ID:    1,
+						Email: "test1@example.com",
+					},
+					{
+						ID:    2,
+						Email: "test2@example.com",
+					},
+				},
+			},
+			mockBlockExistsRepo: mockBlockExistsRepo{
+				expCall: true,
+				input:   []int64{1, 2},
+				output:  false,
+			},
+			mockCreateRepo: mockCreateRepo{
+				expCall: true,
+				input: model.Relationship{
+					RequestorID: 1,
+					TargetID:    2,
+					Type:        model.RelationshipTypeFriend,
+				},
+				err: friendErr.Wrap(util.UniqueViolation, "friend connection exists"),
+			},
+			expErr: ErrFriendConnectionExists,
+		},
 		"err - GetByCriteria": {
 			givenFriendConnInput: FriendConnectionInput{
 				Friends: []string{
@@ -189,7 +233,7 @@ func TestController_CreateFriendConnection(t *testing.T) {
 				input: model.Relationship{
 					RequestorID: 1,
 					TargetID:    2,
-					Type:        model.RelationshipTypeFriend.ToString(),
+					Type:        model.RelationshipTypeFriend,
 				},
 				err: errors.New("Create error"),
 			},
@@ -231,20 +275,20 @@ func TestController_CreateFriendConnection(t *testing.T) {
 				input: model.Relationship{
 					RequestorID: 1,
 					TargetID:    2,
-					Type:        model.RelationshipTypeFriend.ToString(),
+					Type:        model.RelationshipTypeFriend,
 				},
 				output: model.Relationship{
 					ID:          1,
 					RequestorID: 1,
 					TargetID:    2,
-					Type:        model.RelationshipTypeFriend.ToString(),
+					Type:        model.RelationshipTypeFriend,
 				},
 			},
 			expRs: model.Relationship{
 				ID:          1,
 				RequestorID: 1,
 				TargetID:    2,
-				Type:        model.RelationshipTypeFriend.ToString(),
+				Type:        model.RelationshipTypeFriend,
 			},
 		},
 	}

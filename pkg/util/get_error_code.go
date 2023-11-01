@@ -1,12 +1,40 @@
 package util
 
 import (
-	"errors"
+	"fmt"
 
-	"github.com/lib/pq"
+	friendErr "github.com/friendsofgo/errors"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
-func GetErrorCode(err error) string {
-	pqErr := errors.Unwrap(errors.Unwrap(err)).(*pq.Error)
-	return string(pqErr.Code)
+type pgError struct {
+	Code string
+	Msg  string
+}
+
+func (pe pgError) Error() string {
+	return fmt.Sprintf("%s: %s", pe.Code, pe.Msg)
+}
+
+// Add more errors if needed from
+// https://www.postgresql.org/docs/14/errcodes-appendix.html
+var (
+	// UniqueViolation is a unique violation error
+	UniqueViolation = pgError{Code: "23505", Msg: "duplicate key value violates unique constraint"}
+	// CheckViolation is a check key violation error
+	CheckViolation = pgError{Code: "23514", Msg: "check violation for the key"}
+)
+
+// Is checks if the error is a pgError
+func (pe pgError) Is(err error) bool {
+	var pgErr *pgconn.PgError
+
+	fmt.Printf("friend %+v\n", friendErr.Cause(err))
+
+	if friendErr.As(friendErr.Cause(err), pgErr) {
+		fmt.Println("abc", *pgErr)
+		return pgErr.Code == pe.Code
+	}
+
+	return false
 }

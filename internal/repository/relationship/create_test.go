@@ -27,19 +27,19 @@ func TestImpl_Create(t *testing.T) {
 			givenRelationship: model.Relationship{
 				RequestorID: 1,
 				TargetID:    2,
-				Type:        model.RelationshipTypeSubscribe.ToString(),
+				Type:        model.RelationshipTypeSubscribe,
 			},
 			expRs: model.Relationship{
 				RequestorID: 1,
 				TargetID:    2,
-				Type:        model.RelationshipTypeSubscribe.ToString(),
+				Type:        model.RelationshipTypeSubscribe,
 			},
 		},
 		"error: db failed": {
 			givenRelationship: model.Relationship{
 				RequestorID: 1,
 				TargetID:    2,
-				Type:        model.RelationshipTypeSubscribe.ToString(),
+				Type:        model.RelationshipTypeSubscribe,
 			},
 			expDBFailed: true,
 			expErr:      errors.New("ormmodel: unable to insert into relationships: sql: database is closed"),
