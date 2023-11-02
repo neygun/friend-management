@@ -1,10 +1,11 @@
 package util
 
 import (
+	"errors"
 	"fmt"
 
-	friendErr "github.com/friendsofgo/errors"
-	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/lib/pq"
+	pkgerrors "github.com/pkg/errors"
 )
 
 type pgError struct {
@@ -27,10 +28,10 @@ var (
 
 // Is checks if the error is a pgError
 func (pe pgError) Is(err error) bool {
-	var pgErr *pgconn.PgError
+	var pgErr *pq.Error
 
-	if friendErr.As(friendErr.Cause(err), &pgErr) {
-		return pgErr.Code == pe.Code
+	if errors.As(pkgerrors.Cause(err), &pgErr) {
+		return string(pgErr.Code) == pe.Code
 	}
 
 	return false
