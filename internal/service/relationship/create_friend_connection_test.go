@@ -5,11 +5,11 @@ import (
 	"errors"
 	"testing"
 
-	friendErr "github.com/friendsofgo/errors"
-	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/lib/pq"
 	"github.com/neygun/friend-management/internal/model"
 	"github.com/neygun/friend-management/internal/repository/relationship"
 	"github.com/neygun/friend-management/internal/repository/user"
+	pkgerrors "github.com/pkg/errors"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
@@ -141,7 +141,7 @@ func TestController_CreateFriendConnection(t *testing.T) {
 					TargetID:    2,
 					Type:        model.RelationshipTypeFriend,
 				},
-				err: friendErr.Wrap(&pgconn.PgError{
+				err: pkgerrors.Wrap(&pq.Error{
 					Code: "23505",
 				}, "ormmodel: unable to insert into relationships"),
 			},
