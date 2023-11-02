@@ -72,7 +72,7 @@ func (s service) CreateSubscription(ctx context.Context, createSubscriptionInput
 
 }
 
-func containsKey(m map[model.RelationshipType]model.Relationship, key model.RelationshipType) bool {
+func containsKey[TKey model.RelationshipType, TModel any](m map[TKey]TModel, key TKey) bool {
 	_, exists := m[key]
 	return exists
 }

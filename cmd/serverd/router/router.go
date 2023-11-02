@@ -15,6 +15,7 @@ func InitRouter(r *chi.Mux, userHandler user.Handler, relationshipHandler relati
 	r.Post("/friends/list", relationshipHandler.GetFriendsList())
 	r.Post("/friends/common", relationshipHandler.GetCommonFriends())
 	r.Post("/friends/subscription", relationshipHandler.CreateSubscription())
+	r.Post("/friends/block", relationshipHandler.CreateBlock())
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("root."))
