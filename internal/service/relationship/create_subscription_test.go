@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestController_CreateSubscription(t *testing.T) {
+func TestService_CreateSubscription(t *testing.T) {
 	type mockGetByCriteriaUserRepo struct {
 		expCall bool
 		input   model.UserFilter

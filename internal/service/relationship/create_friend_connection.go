@@ -20,7 +20,7 @@ func (s service) CreateFriendConnection(ctx context.Context, friendConnInput Fri
 		return model.Relationship{}, err
 	}
 
-	// check if there is 2 users with the emails
+	// check if there are 2 users with the emails
 	if len(users) != 2 {
 		return model.Relationship{}, ErrUserNotFound
 	}

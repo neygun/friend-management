@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestController_CreateUser(t *testing.T) {
+func TestService_CreateUser(t *testing.T) {
 	type mockCreateUserRepo struct {
 		expCall bool
 		input   model.User

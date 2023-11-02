@@ -119,7 +119,7 @@ func TestHandler_CreateSubscription(t *testing.T) {
 	for scenario, tc := range tcs {
 		t.Run(scenario, func(t *testing.T) {
 			// Given
-			req := httptest.NewRequest(http.MethodPost, "/subscriptions", strings.NewReader(tc.givenRequest))
+			req := httptest.NewRequest(http.MethodPost, "/friends/subscription", strings.NewReader(tc.givenRequest))
 			routeCtx := chi.NewRouteContext()
 			req.Header.Set("Content-Type", "application/json")
 			ctx := context.WithValue(req.Context(), chi.RouteCtxKey, routeCtx)
