@@ -14,8 +14,8 @@ type MockRepository struct {
 	mock.Mock
 }
 
-// CreateUser provides a mock function with given fields: ctx, user
-func (_m *MockRepository) CreateUser(ctx context.Context, user model.User) (model.User, error) {
+// Create provides a mock function with given fields: ctx, user
+func (_m *MockRepository) Create(ctx context.Context, user model.User) (model.User, error) {
 	ret := _m.Called(ctx, user)
 
 	var r0 model.User

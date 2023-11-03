@@ -12,14 +12,14 @@ type GetCommonFriendsInput struct {
 }
 
 // GetCommonFriends returns the common friends list between two emails and count
-func (s service) GetCommonFriends(ctx context.Context, getCommonFriendsInput GetCommonFriendsInput) ([]string, int, error) {
+func (s service) GetCommonFriends(ctx context.Context, input GetCommonFriendsInput) ([]string, int, error) {
 	// get users by emails
-	users, err := s.userRepo.GetByCriteria(ctx, model.UserFilter{Emails: getCommonFriendsInput.Friends})
+	users, err := s.userRepo.GetByCriteria(ctx, model.UserFilter{Emails: input.Friends})
 	if err != nil {
 		return nil, 0, err
 	}
 
-	// check if there is 2 users with the emails
+	// check if there are 2 users with the emails
 	if len(users) != 2 {
 		return nil, 0, ErrUserNotFound
 	}

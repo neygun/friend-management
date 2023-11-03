@@ -28,7 +28,7 @@ func TestService_GetFriendsList(t *testing.T) {
 	}
 
 	type args struct {
-		givenGetFriendsInput   GetFriendsInput
+		givenInput             GetFriendsInput
 		mockGetByCriteriaRepo  mockGetByCriteriaRepo
 		mockGetFriendsListRepo mockGetFriendsListRepo
 		expFriendsList         []string
@@ -38,7 +38,7 @@ func TestService_GetFriendsList(t *testing.T) {
 
 	tcs := map[string]args{
 		"err - user not found": {
-			givenGetFriendsInput: GetFriendsInput{
+			givenInput: GetFriendsInput{
 				Email: "test@example.com",
 			},
 			mockGetByCriteriaRepo: mockGetByCriteriaRepo{
@@ -53,7 +53,7 @@ func TestService_GetFriendsList(t *testing.T) {
 			expErr: ErrUserNotFound,
 		},
 		"err - GetByCriteria": {
-			givenGetFriendsInput: GetFriendsInput{
+			givenInput: GetFriendsInput{
 				Email: "test@example.com",
 			},
 			mockGetByCriteriaRepo: mockGetByCriteriaRepo{
@@ -68,7 +68,7 @@ func TestService_GetFriendsList(t *testing.T) {
 			expErr: errors.New("GetByCriteria error"),
 		},
 		"err - GetFriendsList": {
-			givenGetFriendsInput: GetFriendsInput{
+			givenInput: GetFriendsInput{
 				Email: "test@example.com",
 			},
 			mockGetByCriteriaRepo: mockGetByCriteriaRepo{
@@ -93,7 +93,7 @@ func TestService_GetFriendsList(t *testing.T) {
 			expErr: errors.New("GetFriendsList error"),
 		},
 		"success": {
-			givenGetFriendsInput: GetFriendsInput{
+			givenInput: GetFriendsInput{
 				Email: "test@example.com",
 			},
 			mockGetByCriteriaRepo: mockGetByCriteriaRepo{
@@ -147,7 +147,7 @@ func TestService_GetFriendsList(t *testing.T) {
 			}
 
 			instance := New(mockUserRepo, mockRelationshipRepo)
-			friendsList, count, err := instance.GetFriendsList(ctx, tc.givenGetFriendsInput)
+			friendsList, count, err := instance.GetFriendsList(ctx, tc.givenInput)
 
 			// Then
 			if tc.expErr != nil {

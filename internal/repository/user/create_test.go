@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestImpl_CreateUser(t *testing.T) {
+func TestImpl_Create(t *testing.T) {
 	type args struct {
 		givenUser   model.User
 		expDBFailed bool
@@ -54,7 +54,7 @@ func TestImpl_CreateUser(t *testing.T) {
 				}
 
 				// When
-				result, err := instance.CreateUser(ctx, tc.givenUser)
+				result, err := instance.Create(ctx, tc.givenUser)
 
 				// Then
 				if tc.expErr != nil {

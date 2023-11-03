@@ -22,7 +22,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 		err     error
 	}
 
-	type mockBlockExistsRepo struct {
+	type mockIsExistBlockRepo struct {
 		expCall bool
 		input   []int64
 		output  bool
@@ -37,9 +37,9 @@ func TestService_CreateFriendConnection(t *testing.T) {
 	}
 
 	type args struct {
-		givenFriendConnInput  FriendConnectionInput
+		givenInput            FriendConnectionInput
 		mockGetByCriteriaRepo mockGetByCriteriaRepo
-		mockBlockExistsRepo   mockBlockExistsRepo
+		mockIsExistBlockRepo  mockIsExistBlockRepo
 		mockCreateRepo        mockCreateRepo
 		expRs                 model.Relationship
 		expErr                error
@@ -47,7 +47,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 
 	tcs := map[string]args{
 		"err - user not found": {
-			givenFriendConnInput: FriendConnectionInput{
+			givenInput: FriendConnectionInput{
 				Friends: []string{
 					"test1@example.com",
 					"test2@example.com",
@@ -71,7 +71,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 			expErr: ErrUserNotFound,
 		},
 		"err - block exists": {
-			givenFriendConnInput: FriendConnectionInput{
+			givenInput: FriendConnectionInput{
 				Friends: []string{
 					"test1@example.com",
 					"test2@example.com",
@@ -96,7 +96,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 					},
 				},
 			},
-			mockBlockExistsRepo: mockBlockExistsRepo{
+			mockIsExistBlockRepo: mockIsExistBlockRepo{
 				expCall: true,
 				input:   []int64{1, 2},
 				output:  true,
@@ -104,7 +104,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 			expErr: ErrBlockExists,
 		},
 		"err - friend connection exists": {
-			givenFriendConnInput: FriendConnectionInput{
+			givenInput: FriendConnectionInput{
 				Friends: []string{
 					"test1@example.com",
 					"test2@example.com",
@@ -129,7 +129,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 					},
 				},
 			},
-			mockBlockExistsRepo: mockBlockExistsRepo{
+			mockIsExistBlockRepo: mockIsExistBlockRepo{
 				expCall: true,
 				input:   []int64{1, 2},
 				output:  false,
@@ -148,7 +148,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 			expErr: ErrFriendConnectionExists,
 		},
 		"err - GetByCriteria": {
-			givenFriendConnInput: FriendConnectionInput{
+			givenInput: FriendConnectionInput{
 				Friends: []string{
 					"test1@example.com",
 					"test2@example.com",
@@ -167,7 +167,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 			expErr: errors.New("GetByCriteria error"),
 		},
 		"err - BlockExists": {
-			givenFriendConnInput: FriendConnectionInput{
+			givenInput: FriendConnectionInput{
 				Friends: []string{
 					"test1@example.com",
 					"test2@example.com",
@@ -192,7 +192,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 					},
 				},
 			},
-			mockBlockExistsRepo: mockBlockExistsRepo{
+			mockIsExistBlockRepo: mockIsExistBlockRepo{
 				expCall: true,
 				input:   []int64{1, 2},
 				err:     errors.New("BlockExists error"),
@@ -200,7 +200,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 			expErr: errors.New("BlockExists error"),
 		},
 		"err - Create": {
-			givenFriendConnInput: FriendConnectionInput{
+			givenInput: FriendConnectionInput{
 				Friends: []string{
 					"test1@example.com",
 					"test2@example.com",
@@ -225,7 +225,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 					},
 				},
 			},
-			mockBlockExistsRepo: mockBlockExistsRepo{
+			mockIsExistBlockRepo: mockIsExistBlockRepo{
 				expCall: true,
 				input:   []int64{1, 2},
 				output:  false,
@@ -242,7 +242,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 			expErr: errors.New("Create error"),
 		},
 		"success": {
-			givenFriendConnInput: FriendConnectionInput{
+			givenInput: FriendConnectionInput{
 				Friends: []string{
 					"test1@example.com",
 					"test2@example.com",
@@ -267,7 +267,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 					},
 				},
 			},
-			mockBlockExistsRepo: mockBlockExistsRepo{
+			mockIsExistBlockRepo: mockIsExistBlockRepo{
 				expCall: true,
 				input:   []int64{1, 2},
 				output:  false,
@@ -309,9 +309,9 @@ func TestService_CreateFriendConnection(t *testing.T) {
 				}
 			}
 
-			if tc.mockBlockExistsRepo.expCall {
+			if tc.mockIsExistBlockRepo.expCall {
 				mockRelationshipRepo.ExpectedCalls = append(mockRelationshipRepo.ExpectedCalls,
-					mockRelationshipRepo.On("BlockExists", ctx, tc.mockBlockExistsRepo.input).Return(tc.mockBlockExistsRepo.output, tc.mockBlockExistsRepo.err),
+					mockRelationshipRepo.On("IsExistBlock", ctx, tc.mockIsExistBlockRepo.input).Return(tc.mockIsExistBlockRepo.output, tc.mockIsExistBlockRepo.err),
 				)
 			}
 
@@ -322,7 +322,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 			}
 
 			instance := New(mockUserRepo, mockRelationshipRepo)
-			rs, err := instance.CreateFriendConnection(ctx, tc.givenFriendConnInput)
+			rs, err := instance.CreateFriendConnection(ctx, tc.givenInput)
 
 			// Then
 			if tc.expErr != nil {

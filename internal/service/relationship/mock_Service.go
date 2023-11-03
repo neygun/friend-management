@@ -14,23 +14,23 @@ type MockService struct {
 	mock.Mock
 }
 
-// CreateBlock provides a mock function with given fields: ctx, createBlockInput
-func (_m *MockService) CreateBlock(ctx context.Context, createBlockInput CreateBlockInput) (model.Relationship, error) {
-	ret := _m.Called(ctx, createBlockInput)
+// CreateBlock provides a mock function with given fields: ctx, input
+func (_m *MockService) CreateBlock(ctx context.Context, input CreateBlockInput) (model.Relationship, error) {
+	ret := _m.Called(ctx, input)
 
 	var r0 model.Relationship
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, CreateBlockInput) (model.Relationship, error)); ok {
-		return rf(ctx, createBlockInput)
+		return rf(ctx, input)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, CreateBlockInput) model.Relationship); ok {
-		r0 = rf(ctx, createBlockInput)
+		r0 = rf(ctx, input)
 	} else {
 		r0 = ret.Get(0).(model.Relationship)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, CreateBlockInput) error); ok {
-		r1 = rf(ctx, createBlockInput)
+		r1 = rf(ctx, input)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -38,23 +38,23 @@ func (_m *MockService) CreateBlock(ctx context.Context, createBlockInput CreateB
 	return r0, r1
 }
 
-// CreateFriendConnection provides a mock function with given fields: ctx, friendConnReq
-func (_m *MockService) CreateFriendConnection(ctx context.Context, friendConnReq FriendConnectionInput) (model.Relationship, error) {
-	ret := _m.Called(ctx, friendConnReq)
+// CreateFriendConnection provides a mock function with given fields: ctx, input
+func (_m *MockService) CreateFriendConnection(ctx context.Context, input FriendConnectionInput) (model.Relationship, error) {
+	ret := _m.Called(ctx, input)
 
 	var r0 model.Relationship
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, FriendConnectionInput) (model.Relationship, error)); ok {
-		return rf(ctx, friendConnReq)
+		return rf(ctx, input)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, FriendConnectionInput) model.Relationship); ok {
-		r0 = rf(ctx, friendConnReq)
+		r0 = rf(ctx, input)
 	} else {
 		r0 = ret.Get(0).(model.Relationship)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, FriendConnectionInput) error); ok {
-		r1 = rf(ctx, friendConnReq)
+		r1 = rf(ctx, input)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -62,23 +62,23 @@ func (_m *MockService) CreateFriendConnection(ctx context.Context, friendConnReq
 	return r0, r1
 }
 
-// CreateSubscription provides a mock function with given fields: ctx, createSubscriptionInput
-func (_m *MockService) CreateSubscription(ctx context.Context, createSubscriptionInput CreateSubscriptionInput) (model.Relationship, error) {
-	ret := _m.Called(ctx, createSubscriptionInput)
+// CreateSubscription provides a mock function with given fields: ctx, input
+func (_m *MockService) CreateSubscription(ctx context.Context, input CreateSubscriptionInput) (model.Relationship, error) {
+	ret := _m.Called(ctx, input)
 
 	var r0 model.Relationship
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, CreateSubscriptionInput) (model.Relationship, error)); ok {
-		return rf(ctx, createSubscriptionInput)
+		return rf(ctx, input)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, CreateSubscriptionInput) model.Relationship); ok {
-		r0 = rf(ctx, createSubscriptionInput)
+		r0 = rf(ctx, input)
 	} else {
 		r0 = ret.Get(0).(model.Relationship)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, CreateSubscriptionInput) error); ok {
-		r1 = rf(ctx, createSubscriptionInput)
+		r1 = rf(ctx, input)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -86,18 +86,18 @@ func (_m *MockService) CreateSubscription(ctx context.Context, createSubscriptio
 	return r0, r1
 }
 
-// GetCommonFriends provides a mock function with given fields: ctx, getCommonFriendsInput
-func (_m *MockService) GetCommonFriends(ctx context.Context, getCommonFriendsInput GetCommonFriendsInput) ([]string, int, error) {
-	ret := _m.Called(ctx, getCommonFriendsInput)
+// GetCommonFriends provides a mock function with given fields: ctx, input
+func (_m *MockService) GetCommonFriends(ctx context.Context, input GetCommonFriendsInput) ([]string, int, error) {
+	ret := _m.Called(ctx, input)
 
 	var r0 []string
 	var r1 int
 	var r2 error
 	if rf, ok := ret.Get(0).(func(context.Context, GetCommonFriendsInput) ([]string, int, error)); ok {
-		return rf(ctx, getCommonFriendsInput)
+		return rf(ctx, input)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, GetCommonFriendsInput) []string); ok {
-		r0 = rf(ctx, getCommonFriendsInput)
+		r0 = rf(ctx, input)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]string)
@@ -105,13 +105,13 @@ func (_m *MockService) GetCommonFriends(ctx context.Context, getCommonFriendsInp
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, GetCommonFriendsInput) int); ok {
-		r1 = rf(ctx, getCommonFriendsInput)
+		r1 = rf(ctx, input)
 	} else {
 		r1 = ret.Get(1).(int)
 	}
 
 	if rf, ok := ret.Get(2).(func(context.Context, GetCommonFriendsInput) error); ok {
-		r2 = rf(ctx, getCommonFriendsInput)
+		r2 = rf(ctx, input)
 	} else {
 		r2 = ret.Error(2)
 	}
@@ -119,18 +119,18 @@ func (_m *MockService) GetCommonFriends(ctx context.Context, getCommonFriendsInp
 	return r0, r1, r2
 }
 
-// GetFriendsList provides a mock function with given fields: ctx, getFriendsInput
-func (_m *MockService) GetFriendsList(ctx context.Context, getFriendsInput GetFriendsInput) ([]string, int, error) {
-	ret := _m.Called(ctx, getFriendsInput)
+// GetFriendsList provides a mock function with given fields: ctx, input
+func (_m *MockService) GetFriendsList(ctx context.Context, input GetFriendsInput) ([]string, int, error) {
+	ret := _m.Called(ctx, input)
 
 	var r0 []string
 	var r1 int
 	var r2 error
 	if rf, ok := ret.Get(0).(func(context.Context, GetFriendsInput) ([]string, int, error)); ok {
-		return rf(ctx, getFriendsInput)
+		return rf(ctx, input)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, GetFriendsInput) []string); ok {
-		r0 = rf(ctx, getFriendsInput)
+		r0 = rf(ctx, input)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]string)
@@ -138,13 +138,13 @@ func (_m *MockService) GetFriendsList(ctx context.Context, getFriendsInput GetFr
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, GetFriendsInput) int); ok {
-		r1 = rf(ctx, getFriendsInput)
+		r1 = rf(ctx, input)
 	} else {
 		r1 = ret.Get(1).(int)
 	}
 
 	if rf, ok := ret.Get(2).(func(context.Context, GetFriendsInput) error); ok {
-		r2 = rf(ctx, getFriendsInput)
+		r2 = rf(ctx, input)
 	} else {
 		r2 = ret.Error(2)
 	}

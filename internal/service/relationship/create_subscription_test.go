@@ -42,7 +42,7 @@ func TestService_CreateSubscription(t *testing.T) {
 	}
 
 	type args struct {
-		givenCreateSubscriptionInput      CreateSubscriptionInput
+		givenInput                        CreateSubscriptionInput
 		mockGetByCriteriaUserRepo         mockGetByCriteriaUserRepo
 		mockGetByCriteriaRelationshipRepo mockGetByCriteriaRelationshipRepo
 		mockUpdateRepo                    mockUpdateRepo
@@ -53,7 +53,7 @@ func TestService_CreateSubscription(t *testing.T) {
 
 	tcs := map[string]args{
 		"err - user not found": {
-			givenCreateSubscriptionInput: CreateSubscriptionInput{
+			givenInput: CreateSubscriptionInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -75,7 +75,7 @@ func TestService_CreateSubscription(t *testing.T) {
 			expErr: ErrUserNotFound,
 		},
 		"err - subscription exists": {
-			givenCreateSubscriptionInput: CreateSubscriptionInput{
+			givenInput: CreateSubscriptionInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -116,7 +116,7 @@ func TestService_CreateSubscription(t *testing.T) {
 			expErr: ErrSubscriptionExists,
 		},
 		"err - user.GetByCriteria": {
-			givenCreateSubscriptionInput: CreateSubscriptionInput{
+			givenInput: CreateSubscriptionInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -133,7 +133,7 @@ func TestService_CreateSubscription(t *testing.T) {
 			expErr: errors.New("user.GetByCriteria error"),
 		},
 		"err - relationship.GetByCriteria": {
-			givenCreateSubscriptionInput: CreateSubscriptionInput{
+			givenInput: CreateSubscriptionInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -167,7 +167,7 @@ func TestService_CreateSubscription(t *testing.T) {
 			expErr: errors.New("relationship.GetByCriteria error"),
 		},
 		"err - Update": {
-			givenCreateSubscriptionInput: CreateSubscriptionInput{
+			givenInput: CreateSubscriptionInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -218,7 +218,7 @@ func TestService_CreateSubscription(t *testing.T) {
 			expErr: errors.New("Update error"),
 		},
 		"err - Create": {
-			givenCreateSubscriptionInput: CreateSubscriptionInput{
+			givenInput: CreateSubscriptionInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -268,7 +268,7 @@ func TestService_CreateSubscription(t *testing.T) {
 			expErr: errors.New("Create error"),
 		},
 		"update success": {
-			givenCreateSubscriptionInput: CreateSubscriptionInput{
+			givenInput: CreateSubscriptionInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -329,7 +329,7 @@ func TestService_CreateSubscription(t *testing.T) {
 			},
 		},
 		"create success": {
-			givenCreateSubscriptionInput: CreateSubscriptionInput{
+			givenInput: CreateSubscriptionInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -423,7 +423,7 @@ func TestService_CreateSubscription(t *testing.T) {
 			}
 
 			instance := New(mockUserRepo, mockRelationshipRepo)
-			rs, err := instance.CreateSubscription(ctx, tc.givenCreateSubscriptionInput)
+			rs, err := instance.CreateSubscription(ctx, tc.givenInput)
 
 			// Then
 			if tc.expErr != nil {

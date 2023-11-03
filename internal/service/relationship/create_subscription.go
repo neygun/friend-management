@@ -13,9 +13,9 @@ type CreateSubscriptionInput struct {
 }
 
 // CreateSubscription creates a subscription relationship
-func (s service) CreateSubscription(ctx context.Context, createSubscriptionInput CreateSubscriptionInput) (model.Relationship, error) {
+func (s service) CreateSubscription(ctx context.Context, input CreateSubscriptionInput) (model.Relationship, error) {
 	// get users by emails
-	users, err := s.userRepo.GetByCriteria(ctx, model.UserFilter{Emails: []string{createSubscriptionInput.Requestor, createSubscriptionInput.Target}})
+	users, err := s.userRepo.GetByCriteria(ctx, model.UserFilter{Emails: []string{input.Requestor, input.Target}})
 	if err != nil {
 		return model.Relationship{}, err
 	}
@@ -26,7 +26,7 @@ func (s service) CreateSubscription(ctx context.Context, createSubscriptionInput
 	}
 
 	requestorID, targetID := users[1].ID, users[0].ID
-	if users[0].Email == createSubscriptionInput.Requestor {
+	if users[0].Email == input.Requestor {
 		requestorID, targetID = users[0].ID, users[1].ID
 	}
 

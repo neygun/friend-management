@@ -8,5 +8,5 @@ import (
 
 // CreateUser creates a user
 func (s service) CreateUser(ctx context.Context, user model.User) (model.User, error) {
-	return s.userRepo.CreateUser(ctx, user)
+	return s.userRepo.Create(ctx, user)
 }

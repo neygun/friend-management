@@ -12,9 +12,9 @@ type GetFriendsInput struct {
 }
 
 // GetFriendsList returns the friends list of an email and count
-func (s service) GetFriendsList(ctx context.Context, getFriendsInput GetFriendsInput) ([]string, int, error) {
+func (s service) GetFriendsList(ctx context.Context, input GetFriendsInput) ([]string, int, error) {
 	// get user by email
-	users, err := s.userRepo.GetByCriteria(ctx, model.UserFilter{Emails: []string{getFriendsInput.Email}})
+	users, err := s.userRepo.GetByCriteria(ctx, model.UserFilter{Emails: []string{input.Email}})
 	if err != nil {
 		return nil, 0, err
 	}

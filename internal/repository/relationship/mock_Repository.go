@@ -14,30 +14,6 @@ type MockRepository struct {
 	mock.Mock
 }
 
-// BlockExists provides a mock function with given fields: ctx, userIds
-func (_m *MockRepository) BlockExists(ctx context.Context, userIds []int64) (bool, error) {
-	ret := _m.Called(ctx, userIds)
-
-	var r0 bool
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, []int64) (bool, error)); ok {
-		return rf(ctx, userIds)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, []int64) bool); ok {
-		r0 = rf(ctx, userIds)
-	} else {
-		r0 = ret.Get(0).(bool)
-	}
-
-	if rf, ok := ret.Get(1).(func(context.Context, []int64) error); ok {
-		r1 = rf(ctx, userIds)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
 // Create provides a mock function with given fields: ctx, relationship
 func (_m *MockRepository) Create(ctx context.Context, relationship model.Relationship) (model.Relationship, error) {
 	ret := _m.Called(ctx, relationship)
@@ -133,6 +109,30 @@ func (_m *MockRepository) GetFriendsList(ctx context.Context, id int64) ([]strin
 
 	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
 		r1 = rf(ctx, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// IsExistBlock provides a mock function with given fields: ctx, userIDs
+func (_m *MockRepository) IsExistBlock(ctx context.Context, userIDs []int64) (bool, error) {
+	ret := _m.Called(ctx, userIDs)
+
+	var r0 bool
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, []int64) (bool, error)); ok {
+		return rf(ctx, userIDs)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, []int64) bool); ok {
+		r0 = rf(ctx, userIDs)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, []int64) error); ok {
+		r1 = rf(ctx, userIDs)
 	} else {
 		r1 = ret.Error(1)
 	}

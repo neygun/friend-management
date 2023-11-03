@@ -11,7 +11,7 @@ import (
 // Repository represents user repository
 type Repository interface {
 	GetByCriteria(ctx context.Context, filter model.UserFilter) ([]model.User, error)
-	CreateUser(ctx context.Context, user model.User) (model.User, error)
+	Create(ctx context.Context, user model.User) (model.User, error)
 }
 
 type repository struct {
