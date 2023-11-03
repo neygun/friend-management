@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestImpl_BlockExists(t *testing.T) {
+func TestImpl_IsExistBlock(t *testing.T) {
 	type args struct {
 		givenUserIDs []int64
 		expDBFailed  bool
@@ -43,10 +43,10 @@ func TestImpl_BlockExists(t *testing.T) {
 					dbMock.Close()
 					instance = New(dbMock)
 				}
-				test.LoadTestSQLFile(t, tx, "testdata/block_exists.sql")
+				test.LoadTestSQLFile(t, tx, "testdata/is_exist_block.sql")
 
 				// When
-				result, err := instance.BlockExists(ctx, tc.givenUserIDs)
+				result, err := instance.IsExistBlock(ctx, tc.givenUserIDs)
 
 				// Then
 				if tc.expErr != nil {

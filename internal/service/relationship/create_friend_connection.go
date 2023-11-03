@@ -27,7 +27,7 @@ func (s service) CreateFriendConnection(ctx context.Context, input FriendConnect
 
 	// check if block exists
 	userIDs := []int64{users[0].ID, users[1].ID}
-	blockExists, err := s.relationshipRepo.BlockExists(ctx, userIDs)
+	blockExists, err := s.relationshipRepo.IsExistBlock(ctx, userIDs)
 	if err != nil {
 		return model.Relationship{}, err
 	}
