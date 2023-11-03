@@ -29,17 +29,17 @@ func TestService_GetCommonFriends(t *testing.T) {
 	}
 
 	type args struct {
-		givenGetCommonFriendsInput GetCommonFriendsInput
-		mockGetByCriteriaRepo      mockGetByCriteriaRepo
-		mockGetCommonFriendsRepo   mockGetCommonFriendsRepo
-		expCommonFriends           []string
-		expCount                   int
-		expErr                     error
+		givenInput               GetCommonFriendsInput
+		mockGetByCriteriaRepo    mockGetByCriteriaRepo
+		mockGetCommonFriendsRepo mockGetCommonFriendsRepo
+		expCommonFriends         []string
+		expCount                 int
+		expErr                   error
 	}
 
 	tcs := map[string]args{
 		"err - user not found": {
-			givenGetCommonFriendsInput: GetCommonFriendsInput{
+			givenInput: GetCommonFriendsInput{
 				Friends: []string{
 					"test1@example.com",
 					"test2@example.com",
@@ -63,7 +63,7 @@ func TestService_GetCommonFriends(t *testing.T) {
 			expErr: ErrUserNotFound,
 		},
 		"err - GetByCriteria": {
-			givenGetCommonFriendsInput: GetCommonFriendsInput{
+			givenInput: GetCommonFriendsInput{
 				Friends: []string{
 					"test1@example.com",
 					"test2@example.com",
@@ -82,7 +82,7 @@ func TestService_GetCommonFriends(t *testing.T) {
 			expErr: errors.New("GetByCriteria error"),
 		},
 		"err - GetCommonFriends": {
-			givenGetCommonFriendsInput: GetCommonFriendsInput{
+			givenInput: GetCommonFriendsInput{
 				Friends: []string{
 					"test1@example.com",
 					"test2@example.com",
@@ -116,7 +116,7 @@ func TestService_GetCommonFriends(t *testing.T) {
 			expErr: errors.New("GetCommonFriends error"),
 		},
 		"success": {
-			givenGetCommonFriendsInput: GetCommonFriendsInput{
+			givenInput: GetCommonFriendsInput{
 				Friends: []string{
 					"test1@example.com",
 					"test2@example.com",
@@ -180,7 +180,7 @@ func TestService_GetCommonFriends(t *testing.T) {
 			}
 
 			instance := New(mockUserRepo, mockRelationshipRepo)
-			commonFriends, count, err := instance.GetCommonFriends(ctx, tc.givenGetCommonFriendsInput)
+			commonFriends, count, err := instance.GetCommonFriends(ctx, tc.givenInput)
 
 			// Then
 			if tc.expErr != nil {

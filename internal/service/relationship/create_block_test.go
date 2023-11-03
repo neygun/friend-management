@@ -42,7 +42,7 @@ func TestService_CreateBlock(t *testing.T) {
 	}
 
 	type args struct {
-		givenCreateBlockInput             CreateBlockInput
+		givenInput                        CreateBlockInput
 		mockGetByCriteriaUserRepo         mockGetByCriteriaUserRepo
 		mockGetByCriteriaRelationshipRepo mockGetByCriteriaRelationshipRepo
 		mockUpdateRepo                    mockUpdateRepo
@@ -53,7 +53,7 @@ func TestService_CreateBlock(t *testing.T) {
 
 	tcs := map[string]args{
 		"err - user not found": {
-			givenCreateBlockInput: CreateBlockInput{
+			givenInput: CreateBlockInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -75,7 +75,7 @@ func TestService_CreateBlock(t *testing.T) {
 			expErr: ErrUserNotFound,
 		},
 		"err - block exists": {
-			givenCreateBlockInput: CreateBlockInput{
+			givenInput: CreateBlockInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -116,7 +116,7 @@ func TestService_CreateBlock(t *testing.T) {
 			expErr: ErrBlockExists,
 		},
 		"err - user.GetByCriteria": {
-			givenCreateBlockInput: CreateBlockInput{
+			givenInput: CreateBlockInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -133,7 +133,7 @@ func TestService_CreateBlock(t *testing.T) {
 			expErr: errors.New("user.GetByCriteria error"),
 		},
 		"err - relationship.GetByCriteria": {
-			givenCreateBlockInput: CreateBlockInput{
+			givenInput: CreateBlockInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -167,7 +167,7 @@ func TestService_CreateBlock(t *testing.T) {
 			expErr: errors.New("relationship.GetByCriteria error"),
 		},
 		"err - Update": {
-			givenCreateBlockInput: CreateBlockInput{
+			givenInput: CreateBlockInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -218,7 +218,7 @@ func TestService_CreateBlock(t *testing.T) {
 			expErr: errors.New("Update error"),
 		},
 		"err - Create": {
-			givenCreateBlockInput: CreateBlockInput{
+			givenInput: CreateBlockInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -268,7 +268,7 @@ func TestService_CreateBlock(t *testing.T) {
 			expErr: errors.New("Create error"),
 		},
 		"update success": {
-			givenCreateBlockInput: CreateBlockInput{
+			givenInput: CreateBlockInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -329,7 +329,7 @@ func TestService_CreateBlock(t *testing.T) {
 			},
 		},
 		"create success": {
-			givenCreateBlockInput: CreateBlockInput{
+			givenInput: CreateBlockInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -423,7 +423,7 @@ func TestService_CreateBlock(t *testing.T) {
 			}
 
 			instance := New(mockUserRepo, mockRelationshipRepo)
-			rs, err := instance.CreateBlock(ctx, tc.givenCreateBlockInput)
+			rs, err := instance.CreateBlock(ctx, tc.givenInput)
 
 			// Then
 			if tc.expErr != nil {

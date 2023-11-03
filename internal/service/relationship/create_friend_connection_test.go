@@ -37,7 +37,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 	}
 
 	type args struct {
-		givenFriendConnInput  FriendConnectionInput
+		givenInput            FriendConnectionInput
 		mockGetByCriteriaRepo mockGetByCriteriaRepo
 		mockBlockExistsRepo   mockBlockExistsRepo
 		mockCreateRepo        mockCreateRepo
@@ -47,7 +47,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 
 	tcs := map[string]args{
 		"err - user not found": {
-			givenFriendConnInput: FriendConnectionInput{
+			givenInput: FriendConnectionInput{
 				Friends: []string{
 					"test1@example.com",
 					"test2@example.com",
@@ -71,7 +71,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 			expErr: ErrUserNotFound,
 		},
 		"err - block exists": {
-			givenFriendConnInput: FriendConnectionInput{
+			givenInput: FriendConnectionInput{
 				Friends: []string{
 					"test1@example.com",
 					"test2@example.com",
@@ -104,7 +104,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 			expErr: ErrBlockExists,
 		},
 		"err - friend connection exists": {
-			givenFriendConnInput: FriendConnectionInput{
+			givenInput: FriendConnectionInput{
 				Friends: []string{
 					"test1@example.com",
 					"test2@example.com",
@@ -148,7 +148,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 			expErr: ErrFriendConnectionExists,
 		},
 		"err - GetByCriteria": {
-			givenFriendConnInput: FriendConnectionInput{
+			givenInput: FriendConnectionInput{
 				Friends: []string{
 					"test1@example.com",
 					"test2@example.com",
@@ -167,7 +167,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 			expErr: errors.New("GetByCriteria error"),
 		},
 		"err - BlockExists": {
-			givenFriendConnInput: FriendConnectionInput{
+			givenInput: FriendConnectionInput{
 				Friends: []string{
 					"test1@example.com",
 					"test2@example.com",
@@ -200,7 +200,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 			expErr: errors.New("BlockExists error"),
 		},
 		"err - Create": {
-			givenFriendConnInput: FriendConnectionInput{
+			givenInput: FriendConnectionInput{
 				Friends: []string{
 					"test1@example.com",
 					"test2@example.com",
@@ -242,7 +242,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 			expErr: errors.New("Create error"),
 		},
 		"success": {
-			givenFriendConnInput: FriendConnectionInput{
+			givenInput: FriendConnectionInput{
 				Friends: []string{
 					"test1@example.com",
 					"test2@example.com",
@@ -322,7 +322,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 			}
 
 			instance := New(mockUserRepo, mockRelationshipRepo)
-			rs, err := instance.CreateFriendConnection(ctx, tc.givenFriendConnInput)
+			rs, err := instance.CreateFriendConnection(ctx, tc.givenInput)
 
 			// Then
 			if tc.expErr != nil {

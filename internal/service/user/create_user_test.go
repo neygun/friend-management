@@ -12,38 +12,38 @@ import (
 )
 
 func TestService_CreateUser(t *testing.T) {
-	type mockCreateUserRepo struct {
+	type mockCreateRepo struct {
 		expCall bool
 		input   model.User
 		output  model.User
 		err     error
 	}
 	type args struct {
-		givenUser          model.User
-		mockCreateUserRepo mockCreateUserRepo
-		expRs              model.User
-		expErr             error
+		givenUser      model.User
+		mockCreateRepo mockCreateRepo
+		expRs          model.User
+		expErr         error
 	}
 
 	tcs := map[string]args{
-		"err - CreateUser": {
+		"err - Create": {
 			givenUser: model.User{
 				Email: "test@example.com",
 			},
-			mockCreateUserRepo: mockCreateUserRepo{
+			mockCreateRepo: mockCreateRepo{
 				expCall: true,
 				input: model.User{
 					Email: "test@example.com",
 				},
-				err: errors.New("CreateUser error"),
+				err: errors.New("Create error"),
 			},
-			expErr: errors.New("CreateUser error"),
+			expErr: errors.New("Create error"),
 		},
 		"success": {
 			givenUser: model.User{
 				Email: "test@example.com",
 			},
-			mockCreateUserRepo: mockCreateUserRepo{
+			mockCreateRepo: mockCreateRepo{
 				expCall: true,
 				input: model.User{
 					Email: "test@example.com",
@@ -67,9 +67,9 @@ func TestService_CreateUser(t *testing.T) {
 			mockUserRepo := user.NewMockRepository(t)
 
 			// When
-			if tc.mockCreateUserRepo.expCall {
+			if tc.mockCreateRepo.expCall {
 				mockUserRepo.ExpectedCalls = []*mock.Call{
-					mockUserRepo.On("CreateUser", ctx, tc.mockCreateUserRepo.input).Return(tc.mockCreateUserRepo.output, tc.mockCreateUserRepo.err),
+					mockUserRepo.On("Create", ctx, tc.mockCreateRepo.input).Return(tc.mockCreateRepo.output, tc.mockCreateRepo.err),
 				}
 			}
 

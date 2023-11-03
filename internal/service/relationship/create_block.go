@@ -13,9 +13,9 @@ type CreateBlockInput struct {
 }
 
 // CreateBlock creates a blocking relationship
-func (s service) CreateBlock(ctx context.Context, createBlockInput CreateBlockInput) (model.Relationship, error) {
+func (s service) CreateBlock(ctx context.Context, input CreateBlockInput) (model.Relationship, error) {
 	// get users by emails
-	users, err := s.userRepo.GetByCriteria(ctx, model.UserFilter{Emails: []string{createBlockInput.Requestor, createBlockInput.Target}})
+	users, err := s.userRepo.GetByCriteria(ctx, model.UserFilter{Emails: []string{input.Requestor, input.Target}})
 	if err != nil {
 		return model.Relationship{}, err
 	}
@@ -26,7 +26,7 @@ func (s service) CreateBlock(ctx context.Context, createBlockInput CreateBlockIn
 	}
 
 	requestorID, targetID := users[1].ID, users[0].ID
-	if users[0].Email == createBlockInput.Requestor {
+	if users[0].Email == input.Requestor {
 		requestorID, targetID = users[0].ID, users[1].ID
 	}
 
