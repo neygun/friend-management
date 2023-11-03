@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestController_GetCommonFriends(t *testing.T) {
+func TestService_GetCommonFriends(t *testing.T) {
 	type mockGetByCriteriaRepo struct {
 		expCall bool
 		input   model.UserFilter

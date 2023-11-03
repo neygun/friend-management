@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestController_CreateFriendConnection(t *testing.T) {
+func TestService_CreateFriendConnection(t *testing.T) {
 	type mockGetByCriteriaRepo struct {
 		expCall bool
 		input   model.UserFilter

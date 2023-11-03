@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestService_CreateSubscription(t *testing.T) {
+func TestService_CreateBlock(t *testing.T) {
 	type mockGetByCriteriaUserRepo struct {
 		expCall bool
 		input   model.UserFilter
@@ -42,7 +42,7 @@ func TestService_CreateSubscription(t *testing.T) {
 	}
 
 	type args struct {
-		givenCreateSubscriptionInput      CreateSubscriptionInput
+		givenCreateBlockInput             CreateBlockInput
 		mockGetByCriteriaUserRepo         mockGetByCriteriaUserRepo
 		mockGetByCriteriaRelationshipRepo mockGetByCriteriaRelationshipRepo
 		mockUpdateRepo                    mockUpdateRepo
@@ -53,7 +53,7 @@ func TestService_CreateSubscription(t *testing.T) {
 
 	tcs := map[string]args{
 		"err - user not found": {
-			givenCreateSubscriptionInput: CreateSubscriptionInput{
+			givenCreateBlockInput: CreateBlockInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -74,8 +74,100 @@ func TestService_CreateSubscription(t *testing.T) {
 			},
 			expErr: ErrUserNotFound,
 		},
-		"err - subscription exists": {
-			givenCreateSubscriptionInput: CreateSubscriptionInput{
+		"err - block exists": {
+			givenCreateBlockInput: CreateBlockInput{
+				Requestor: "test1@example.com",
+				Target:    "test2@example.com",
+			},
+			mockGetByCriteriaUserRepo: mockGetByCriteriaUserRepo{
+				expCall: true,
+				input: model.UserFilter{
+					Emails: []string{
+						"test1@example.com",
+						"test2@example.com",
+					},
+				},
+				output: []model.User{
+					{
+						ID:    1,
+						Email: "test1@example.com",
+					},
+					{
+						ID:    2,
+						Email: "test2@example.com",
+					},
+				},
+			},
+			mockGetByCriteriaRelationshipRepo: mockGetByCriteriaRelationshipRepo{
+				expCall: true,
+				input: model.RelationshipFilter{
+					RequestorID: 1,
+					TargetID:    2,
+				},
+				output: []model.Relationship{
+					{
+						ID:          1,
+						RequestorID: 1,
+						TargetID:    2,
+						Type:        model.RelationshipTypeBlock,
+					},
+				},
+			},
+			expErr: ErrBlockExists,
+		},
+		"err - user.GetByCriteria": {
+			givenCreateBlockInput: CreateBlockInput{
+				Requestor: "test1@example.com",
+				Target:    "test2@example.com",
+			},
+			mockGetByCriteriaUserRepo: mockGetByCriteriaUserRepo{
+				expCall: true,
+				input: model.UserFilter{
+					Emails: []string{
+						"test1@example.com",
+						"test2@example.com",
+					},
+				},
+				err: errors.New("user.GetByCriteria error"),
+			},
+			expErr: errors.New("user.GetByCriteria error"),
+		},
+		"err - relationship.GetByCriteria": {
+			givenCreateBlockInput: CreateBlockInput{
+				Requestor: "test1@example.com",
+				Target:    "test2@example.com",
+			},
+			mockGetByCriteriaUserRepo: mockGetByCriteriaUserRepo{
+				expCall: true,
+				input: model.UserFilter{
+					Emails: []string{
+						"test1@example.com",
+						"test2@example.com",
+					},
+				},
+				output: []model.User{
+					{
+						ID:    1,
+						Email: "test1@example.com",
+					},
+					{
+						ID:    2,
+						Email: "test2@example.com",
+					},
+				},
+			},
+			mockGetByCriteriaRelationshipRepo: mockGetByCriteriaRelationshipRepo{
+				expCall: true,
+				input: model.RelationshipFilter{
+					RequestorID: 1,
+					TargetID:    2,
+				},
+				err: errors.New("relationship.GetByCriteria error"),
+			},
+			expErr: errors.New("relationship.GetByCriteria error"),
+		},
+		"err - Update": {
+			givenCreateBlockInput: CreateBlockInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -113,112 +205,20 @@ func TestService_CreateSubscription(t *testing.T) {
 					},
 				},
 			},
-			expErr: ErrSubscriptionExists,
-		},
-		"err - user.GetByCriteria": {
-			givenCreateSubscriptionInput: CreateSubscriptionInput{
-				Requestor: "test1@example.com",
-				Target:    "test2@example.com",
-			},
-			mockGetByCriteriaUserRepo: mockGetByCriteriaUserRepo{
-				expCall: true,
-				input: model.UserFilter{
-					Emails: []string{
-						"test1@example.com",
-						"test2@example.com",
-					},
-				},
-				err: errors.New("user.GetByCriteria error"),
-			},
-			expErr: errors.New("user.GetByCriteria error"),
-		},
-		"err - relationship.GetByCriteria": {
-			givenCreateSubscriptionInput: CreateSubscriptionInput{
-				Requestor: "test1@example.com",
-				Target:    "test2@example.com",
-			},
-			mockGetByCriteriaUserRepo: mockGetByCriteriaUserRepo{
-				expCall: true,
-				input: model.UserFilter{
-					Emails: []string{
-						"test1@example.com",
-						"test2@example.com",
-					},
-				},
-				output: []model.User{
-					{
-						ID:    1,
-						Email: "test1@example.com",
-					},
-					{
-						ID:    2,
-						Email: "test2@example.com",
-					},
-				},
-			},
-			mockGetByCriteriaRelationshipRepo: mockGetByCriteriaRelationshipRepo{
-				expCall: true,
-				input: model.RelationshipFilter{
-					RequestorID: 1,
-					TargetID:    2,
-				},
-				err: errors.New("relationship.GetByCriteria error"),
-			},
-			expErr: errors.New("relationship.GetByCriteria error"),
-		},
-		"err - Update": {
-			givenCreateSubscriptionInput: CreateSubscriptionInput{
-				Requestor: "test1@example.com",
-				Target:    "test2@example.com",
-			},
-			mockGetByCriteriaUserRepo: mockGetByCriteriaUserRepo{
-				expCall: true,
-				input: model.UserFilter{
-					Emails: []string{
-						"test1@example.com",
-						"test2@example.com",
-					},
-				},
-				output: []model.User{
-					{
-						ID:    1,
-						Email: "test1@example.com",
-					},
-					{
-						ID:    2,
-						Email: "test2@example.com",
-					},
-				},
-			},
-			mockGetByCriteriaRelationshipRepo: mockGetByCriteriaRelationshipRepo{
-				expCall: true,
-				input: model.RelationshipFilter{
-					RequestorID: 1,
-					TargetID:    2,
-				},
-				output: []model.Relationship{
-					{
-						ID:          1,
-						RequestorID: 1,
-						TargetID:    2,
-						Type:        model.RelationshipTypeBlock,
-					},
-				},
-			},
 			mockUpdateRepo: mockUpdateRepo{
 				expCall: true,
 				input: model.Relationship{
 					ID:          1,
 					RequestorID: 1,
 					TargetID:    2,
-					Type:        model.RelationshipTypeSubscribe,
+					Type:        model.RelationshipTypeBlock,
 				},
 				err: errors.New("Update error"),
 			},
 			expErr: errors.New("Update error"),
 		},
 		"err - Create": {
-			givenCreateSubscriptionInput: CreateSubscriptionInput{
+			givenCreateBlockInput: CreateBlockInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -261,14 +261,14 @@ func TestService_CreateSubscription(t *testing.T) {
 				input: model.Relationship{
 					RequestorID: 1,
 					TargetID:    2,
-					Type:        model.RelationshipTypeSubscribe,
+					Type:        model.RelationshipTypeBlock,
 				},
 				err: errors.New("Create error"),
 			},
 			expErr: errors.New("Create error"),
 		},
 		"update success": {
-			givenCreateSubscriptionInput: CreateSubscriptionInput{
+			givenCreateBlockInput: CreateBlockInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -302,7 +302,7 @@ func TestService_CreateSubscription(t *testing.T) {
 						ID:          1,
 						RequestorID: 1,
 						TargetID:    2,
-						Type:        model.RelationshipTypeBlock,
+						Type:        model.RelationshipTypeSubscribe,
 					},
 				},
 			},
@@ -312,24 +312,24 @@ func TestService_CreateSubscription(t *testing.T) {
 					ID:          1,
 					RequestorID: 1,
 					TargetID:    2,
-					Type:        model.RelationshipTypeSubscribe,
+					Type:        model.RelationshipTypeBlock,
 				},
 				output: model.Relationship{
 					ID:          1,
 					RequestorID: 1,
 					TargetID:    2,
-					Type:        model.RelationshipTypeSubscribe,
+					Type:        model.RelationshipTypeBlock,
 				},
 			},
 			expRs: model.Relationship{
 				ID:          1,
 				RequestorID: 1,
 				TargetID:    2,
-				Type:        model.RelationshipTypeSubscribe,
+				Type:        model.RelationshipTypeBlock,
 			},
 		},
 		"create success": {
-			givenCreateSubscriptionInput: CreateSubscriptionInput{
+			givenCreateBlockInput: CreateBlockInput{
 				Requestor: "test1@example.com",
 				Target:    "test2@example.com",
 			},
@@ -372,20 +372,20 @@ func TestService_CreateSubscription(t *testing.T) {
 				input: model.Relationship{
 					RequestorID: 1,
 					TargetID:    2,
-					Type:        model.RelationshipTypeSubscribe,
+					Type:        model.RelationshipTypeBlock,
 				},
 				output: model.Relationship{
 					ID:          1,
 					RequestorID: 1,
 					TargetID:    2,
-					Type:        model.RelationshipTypeSubscribe,
+					Type:        model.RelationshipTypeBlock,
 				},
 			},
 			expRs: model.Relationship{
 				ID:          1,
 				RequestorID: 1,
 				TargetID:    2,
-				Type:        model.RelationshipTypeSubscribe,
+				Type:        model.RelationshipTypeBlock,
 			},
 		},
 	}
@@ -423,7 +423,7 @@ func TestService_CreateSubscription(t *testing.T) {
 			}
 
 			instance := New(mockUserRepo, mockRelationshipRepo)
-			rs, err := instance.CreateSubscription(ctx, tc.givenCreateSubscriptionInput)
+			rs, err := instance.CreateBlock(ctx, tc.givenCreateBlockInput)
 
 			// Then
 			if tc.expErr != nil {

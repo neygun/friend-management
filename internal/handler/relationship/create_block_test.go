@@ -16,19 +16,19 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHandler_CreateSubscription(t *testing.T) {
-	type mockCreateSubscriptionService struct {
+func TestHandler_CreateBlock(t *testing.T) {
+	type mockCreateBlockService struct {
 		expCall bool
-		input   relationship.CreateSubscriptionInput
+		input   relationship.CreateBlockInput
 		output  model.Relationship
 		err     error
 	}
 
 	type args struct {
-		givenRequest                  string
-		mockCreateSubscriptionService mockCreateSubscriptionService
-		expStatusCode                 int
-		expResponse                   string
+		givenRequest           string
+		mockCreateBlockService mockCreateBlockService
+		expStatusCode          int
+		expResponse            string
 	}
 
 	tcs := map[string]args{
@@ -59,9 +59,9 @@ func TestHandler_CreateSubscription(t *testing.T) {
 		},
 		"err - user not found": {
 			givenRequest: `{"requestor":"test1@example.com","target":"test2@example.com"}`,
-			mockCreateSubscriptionService: mockCreateSubscriptionService{
+			mockCreateBlockService: mockCreateBlockService{
 				expCall: true,
-				input: relationship.CreateSubscriptionInput{
+				input: relationship.CreateBlockInput{
 					Requestor: "test1@example.com",
 					Target:    "test2@example.com",
 				},
@@ -70,24 +70,24 @@ func TestHandler_CreateSubscription(t *testing.T) {
 			expStatusCode: http.StatusBadRequest,
 			expResponse:   "user_not_found.json",
 		},
-		"err - subscription exists": {
+		"err - block exists": {
 			givenRequest: `{"requestor":"test1@example.com","target":"test2@example.com"}`,
-			mockCreateSubscriptionService: mockCreateSubscriptionService{
+			mockCreateBlockService: mockCreateBlockService{
 				expCall: true,
-				input: relationship.CreateSubscriptionInput{
+				input: relationship.CreateBlockInput{
 					Requestor: "test1@example.com",
 					Target:    "test2@example.com",
 				},
-				err: relationship.ErrSubscriptionExists,
+				err: relationship.ErrBlockExists,
 			},
 			expStatusCode: http.StatusBadRequest,
-			expResponse:   "subscription_exists.json",
+			expResponse:   "block_exists.json",
 		},
 		"service error": {
 			givenRequest: `{"requestor":"test1@example.com","target":"test2@example.com"}`,
-			mockCreateSubscriptionService: mockCreateSubscriptionService{
+			mockCreateBlockService: mockCreateBlockService{
 				expCall: true,
-				input: relationship.CreateSubscriptionInput{
+				input: relationship.CreateBlockInput{
 					Requestor: "test1@example.com",
 					Target:    "test2@example.com",
 				},
@@ -98,9 +98,9 @@ func TestHandler_CreateSubscription(t *testing.T) {
 		},
 		"success": {
 			givenRequest: `{"requestor":"test1@example.com","target":"test2@example.com"}`,
-			mockCreateSubscriptionService: mockCreateSubscriptionService{
+			mockCreateBlockService: mockCreateBlockService{
 				expCall: true,
-				input: relationship.CreateSubscriptionInput{
+				input: relationship.CreateBlockInput{
 					Requestor: "test1@example.com",
 					Target:    "test2@example.com",
 				},
@@ -108,7 +108,7 @@ func TestHandler_CreateSubscription(t *testing.T) {
 					ID:          1,
 					RequestorID: 1,
 					TargetID:    2,
-					Type:        "SUBSCRIBE",
+					Type:        "BLOCK",
 				},
 			},
 			expStatusCode: http.StatusOK,
@@ -119,7 +119,7 @@ func TestHandler_CreateSubscription(t *testing.T) {
 	for scenario, tc := range tcs {
 		t.Run(scenario, func(t *testing.T) {
 			// Given
-			req := httptest.NewRequest(http.MethodPost, "/friends/subscription", strings.NewReader(tc.givenRequest))
+			req := httptest.NewRequest(http.MethodPost, "/friends/block", strings.NewReader(tc.givenRequest))
 			routeCtx := chi.NewRouteContext()
 			req.Header.Set("Content-Type", "application/json")
 			ctx := context.WithValue(req.Context(), chi.RouteCtxKey, routeCtx)
@@ -130,13 +130,13 @@ func TestHandler_CreateSubscription(t *testing.T) {
 			mockRelationshipService := relationship.NewMockService(t)
 
 			// When
-			if tc.mockCreateSubscriptionService.expCall {
+			if tc.mockCreateBlockService.expCall {
 				mockRelationshipService.ExpectedCalls = []*mock.Call{
-					mockRelationshipService.On("CreateSubscription", ctx, tc.mockCreateSubscriptionService.input).Return(tc.mockCreateSubscriptionService.output, tc.mockCreateSubscriptionService.err),
+					mockRelationshipService.On("CreateBlock", ctx, tc.mockCreateBlockService.input).Return(tc.mockCreateBlockService.output, tc.mockCreateBlockService.err),
 				}
 			}
 			instance := New(mockRelationshipService)
-			handler := instance.CreateSubscription()
+			handler := instance.CreateBlock()
 			handler.ServeHTTP(res, req)
 
 			// Then
