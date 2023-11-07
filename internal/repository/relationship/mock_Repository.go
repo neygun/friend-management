@@ -90,6 +90,32 @@ func (_m *MockRepository) GetCommonFriends(ctx context.Context, user1ID int64, u
 	return r0, r1
 }
 
+// GetEmailsReceivingUpdates provides a mock function with given fields: ctx, senderID, mentionedUserIDs
+func (_m *MockRepository) GetEmailsReceivingUpdates(ctx context.Context, senderID int64, mentionedUserIDs []int64) ([]string, error) {
+	ret := _m.Called(ctx, senderID, mentionedUserIDs)
+
+	var r0 []string
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, []int64) ([]string, error)); ok {
+		return rf(ctx, senderID, mentionedUserIDs)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int64, []int64) []string); ok {
+		r0 = rf(ctx, senderID, mentionedUserIDs)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]string)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int64, []int64) error); ok {
+		r1 = rf(ctx, senderID, mentionedUserIDs)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetFriendsList provides a mock function with given fields: ctx, id
 func (_m *MockRepository) GetFriendsList(ctx context.Context, id int64) ([]string, error) {
 	ret := _m.Called(ctx, id)
