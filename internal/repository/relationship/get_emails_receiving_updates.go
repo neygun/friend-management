@@ -34,7 +34,7 @@ func (r repository) GetEmailsReceivingUpdates(ctx context.Context, senderID int6
 				FROM `+ormmodel.TableNames.Relationships+`
 				WHERE `+ormmodel.RelationshipColumns.TargetID+`=$1 AND `+ormmodel.RelationshipColumns.Type+`=$3
 			) OR `+ormmodel.UserColumns.ID+` = ANY($5)
-		)
+		) AS r
 		WHERE `+ormmodel.UserColumns.ID+` NOT IN (
 			SELECT `+ormmodel.RelationshipColumns.RequestorID+`
 			FROM `+ormmodel.TableNames.Relationships+`
