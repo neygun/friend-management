@@ -29,13 +29,16 @@ func (s service) GetEmailsReceivingUpdates(ctx context.Context, input GetEmailsR
 	// extract users mentioned in text
 	pattern := regexp.MustCompile("[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*")
 	mentionedEmails := pattern.FindAllString(input.Text, -1)
-	mentionedUsers, err := s.userRepo.GetByCriteria(ctx, model.UserFilter{Emails: mentionedEmails})
-	if err != nil {
-		return nil, err
-	}
-	mentionedUserIDs := make([]int64, len(mentionedUsers))
-	for i, user := range mentionedUsers {
-		mentionedUserIDs[i] = user.ID
+
+	var mentionedUserIDs []int64
+	if len(mentionedEmails) != 0 {
+		mentionedUsers, err := s.userRepo.GetByCriteria(ctx, model.UserFilter{Emails: mentionedEmails})
+		if err != nil {
+			return nil, err
+		}
+		for i, user := range mentionedUsers {
+			mentionedUserIDs[i] = user.ID
+		}
 	}
 
 	// get recipients
