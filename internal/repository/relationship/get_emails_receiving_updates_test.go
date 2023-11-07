@@ -58,6 +58,7 @@ func TestImpl_GetEmailsReceivingUpdates(t *testing.T) {
 					require.NoError(t, err)
 					require.Equal(t, tc.expRs, result)
 				}
+
 			})
 		})
 	}
