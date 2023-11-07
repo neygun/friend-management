@@ -15,6 +15,7 @@ type Service interface {
 	GetCommonFriends(ctx context.Context, input GetCommonFriendsInput) ([]string, int, error)
 	CreateSubscription(ctx context.Context, input CreateSubscriptionInput) (model.Relationship, error)
 	CreateBlock(ctx context.Context, input CreateBlockInput) (model.Relationship, error)
+	GetEmailsReceivingUpdates(ctx context.Context, input GetEmailsReceivingUpdatesInput) ([]string, error)
 }
 
 type service struct {

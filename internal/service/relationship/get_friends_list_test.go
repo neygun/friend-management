@@ -141,9 +141,9 @@ func TestService_GetFriendsList(t *testing.T) {
 			}
 
 			if tc.mockGetFriendsListRepo.expCall {
-				mockRelationshipRepo.ExpectedCalls = append(mockRelationshipRepo.ExpectedCalls,
+				mockRelationshipRepo.ExpectedCalls = []*mock.Call{
 					mockRelationshipRepo.On("GetFriendsList", ctx, tc.mockGetFriendsListRepo.input).Return(tc.mockGetFriendsListRepo.output, tc.mockGetFriendsListRepo.err),
-				)
+				}
 			}
 
 			instance := New(mockUserRepo, mockRelationshipRepo)
