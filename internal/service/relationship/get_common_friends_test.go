@@ -173,10 +173,10 @@ func TestService_GetCommonFriends(t *testing.T) {
 			}
 
 			if tc.mockGetCommonFriendsRepo.expCall {
-				mockRelationshipRepo.ExpectedCalls = append(mockRelationshipRepo.ExpectedCalls,
+				mockRelationshipRepo.ExpectedCalls = []*mock.Call{
 					mockRelationshipRepo.On("GetCommonFriends", ctx, tc.mockGetCommonFriendsRepo.user1ID, tc.mockGetCommonFriendsRepo.user2ID).
 						Return(tc.mockGetCommonFriendsRepo.output, tc.mockGetCommonFriendsRepo.err),
-				)
+				}
 			}
 
 			instance := New(mockUserRepo, mockRelationshipRepo)

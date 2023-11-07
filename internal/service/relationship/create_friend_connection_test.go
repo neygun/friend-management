@@ -310,9 +310,9 @@ func TestService_CreateFriendConnection(t *testing.T) {
 			}
 
 			if tc.mockIsExistBlockRepo.expCall {
-				mockRelationshipRepo.ExpectedCalls = append(mockRelationshipRepo.ExpectedCalls,
+				mockRelationshipRepo.ExpectedCalls = []*mock.Call{
 					mockRelationshipRepo.On("IsExistBlock", ctx, tc.mockIsExistBlockRepo.input).Return(tc.mockIsExistBlockRepo.output, tc.mockIsExistBlockRepo.err),
-				)
+				}
 			}
 
 			if tc.mockCreateRepo.expCall {

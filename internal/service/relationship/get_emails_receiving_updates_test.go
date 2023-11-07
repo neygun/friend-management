@@ -228,10 +228,10 @@ func TestService_GetEmailsReceivingUpdates(t *testing.T) {
 			}
 
 			if tc.mockGetEmailsReceivingUpdatesRepo.expCall {
-				mockRelationshipRepo.ExpectedCalls = append(mockRelationshipRepo.ExpectedCalls,
+				mockRelationshipRepo.ExpectedCalls = []*mock.Call{
 					mockRelationshipRepo.On("GetEmailsReceivingUpdates", ctx, tc.mockGetEmailsReceivingUpdatesRepo.senderID, tc.mockGetEmailsReceivingUpdatesRepo.mentionedUserIDs).
 						Return(tc.mockGetEmailsReceivingUpdatesRepo.output, tc.mockGetEmailsReceivingUpdatesRepo.err),
-				)
+				}
 			}
 
 			instance := New(mockUserRepo, mockRelationshipRepo)

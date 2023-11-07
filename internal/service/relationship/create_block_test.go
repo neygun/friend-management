@@ -405,9 +405,9 @@ func TestService_CreateBlock(t *testing.T) {
 			}
 
 			if tc.mockGetByCriteriaRelationshipRepo.expCall {
-				mockRelationshipRepo.ExpectedCalls = append(mockRelationshipRepo.ExpectedCalls,
+				mockRelationshipRepo.ExpectedCalls = []*mock.Call{
 					mockRelationshipRepo.On("GetByCriteria", ctx, tc.mockGetByCriteriaRelationshipRepo.input).Return(tc.mockGetByCriteriaRelationshipRepo.output, tc.mockGetByCriteriaRelationshipRepo.err),
-				)
+				}
 			}
 
 			if tc.mockUpdateRepo.expCall {
