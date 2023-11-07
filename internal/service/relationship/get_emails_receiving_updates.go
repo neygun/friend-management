@@ -36,6 +36,7 @@ func (s service) GetEmailsReceivingUpdates(ctx context.Context, input GetEmailsR
 		if err != nil {
 			return nil, err
 		}
+		mentionedUserIDs = make([]int64, len(mentionedUsers))
 		for i, user := range mentionedUsers {
 			mentionedUserIDs[i] = user.ID
 		}
