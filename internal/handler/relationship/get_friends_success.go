@@ -1,4 +1,4 @@
-package handler
+package relationship
 
 // GetFriendsSuccess is success reponse when retrieving the friends list for an email address
 type GetFriendsSuccess struct {

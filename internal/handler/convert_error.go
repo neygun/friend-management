@@ -6,11 +6,14 @@ import (
 	"github.com/neygun/friend-management/internal/service/relationship"
 )
 
-// ConvertErr converts service errors to handler errors
-func ConvertErr(err error) error {
+// ConvertError converts service errors to handler errors
+func ConvertError(err error) error {
 	switch err {
-	case relationship.ErrUserNotFound, relationship.ErrFriendConnectionExists, relationship.ErrSubscriptionExists, relationship.ErrBlockExists:
-		return HandlerErr{
+	case relationship.ErrUserNotFound,
+		relationship.ErrFriendConnectionExists,
+		relationship.ErrSubscriptionExists,
+		relationship.ErrBlockExists:
+		return HandlerError{
 			Code:        http.StatusBadRequest,
 			Description: err.Error(),
 		}

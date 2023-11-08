@@ -22,7 +22,7 @@ func (req *GetEmailsReceivingUpdatesRequest) isValid() error {
 
 	// check if sender exists
 	if req.Sender == "" {
-		return handler.HandlerErr{
+		return handler.HandlerError{
 			Code:        http.StatusBadRequest,
 			Description: "Missing sender field",
 		}
@@ -30,7 +30,7 @@ func (req *GetEmailsReceivingUpdatesRequest) isValid() error {
 
 	// check if text exists
 	if req.Text == "" {
-		return handler.HandlerErr{
+		return handler.HandlerError{
 			Code:        http.StatusBadRequest,
 			Description: "Missing text field",
 		}
@@ -38,7 +38,7 @@ func (req *GetEmailsReceivingUpdatesRequest) isValid() error {
 
 	// check if the sender's email is valid
 	if !util.IsEmail(req.Sender) {
-		return handler.HandlerErr{
+		return handler.HandlerError{
 			Code:        http.StatusBadRequest,
 			Description: "Sender's email is invalid",
 		}
@@ -49,28 +49,32 @@ func (req *GetEmailsReceivingUpdatesRequest) isValid() error {
 
 // GetEmailsReceivingUpdates handles requests to retrieve emails that can receive updates from an email
 func (h Handler) GetEmailsReceivingUpdates() http.HandlerFunc {
-	return handler.ErrHandler(func(w http.ResponseWriter, r *http.Request) error {
+	return handler.ErrorHandler(func(w http.ResponseWriter, r *http.Request) error {
 		var req GetEmailsReceivingUpdatesRequest
+		// Parse request body
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			return handler.HandlerErr{
+			return handler.HandlerError{
 				Code:        http.StatusBadRequest,
 				Description: "Invalid JSON request",
 			}
 		}
 
+		// Validate request
 		if err := req.isValid(); err != nil {
 			return err
 		}
 
+		// Get emails receiving updates
 		recipients, err := h.relationshipService.GetEmailsReceivingUpdates(r.Context(), relationship.GetEmailsReceivingUpdatesInput{
 			Sender: req.Sender,
 			Text:   req.Text,
 		})
 		if err != nil {
-			return handler.ConvertErr(err)
+			return handler.ConvertError(err)
 		}
 
-		json.NewEncoder(w).Encode(handler.GetEmailsReceivingUpdatesSuccess{
+		// Success
+		json.NewEncoder(w).Encode(GetEmailsReceivingUpdatesSuccess{
 			Success:    true,
 			Recipients: recipients,
 		})

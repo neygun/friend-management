@@ -1,5 +1,8 @@
+build:
+	docker build -t fm-app .
+
 run:
-	@docker-compose up fm-app
+	docker-compose --env-file ./.env up
 
 migrate-up:
 	docker compose run --rm migrate sh -c "migrate -path /migration -database postgres://postgres:postgres@database:5432/fm-pg?sslmode=disable up"

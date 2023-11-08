@@ -23,7 +23,7 @@ func (req *CreateSubscriptionRequest) isValid() error {
 
 	// check if requestor exists
 	if req.Requestor == "" {
-		return handler.HandlerErr{
+		return handler.HandlerError{
 			Code:        http.StatusBadRequest,
 			Description: "Missing requestor field",
 		}
@@ -31,7 +31,7 @@ func (req *CreateSubscriptionRequest) isValid() error {
 
 	// check if target exists
 	if req.Target == "" {
-		return handler.HandlerErr{
+		return handler.HandlerError{
 			Code:        http.StatusBadRequest,
 			Description: "Missing target field",
 		}
@@ -39,7 +39,7 @@ func (req *CreateSubscriptionRequest) isValid() error {
 
 	// check if the emails is valid
 	if !util.IsEmail(req.Requestor) || !util.IsEmail(req.Target) {
-		return handler.HandlerErr{
+		return handler.HandlerError{
 			Code:        http.StatusBadRequest,
 			Description: "Invalid email",
 		}
@@ -47,7 +47,7 @@ func (req *CreateSubscriptionRequest) isValid() error {
 
 	// check if requestor and target are the same
 	if req.Requestor == req.Target {
-		return handler.HandlerErr{
+		return handler.HandlerError{
 			Code:        http.StatusBadRequest,
 			Description: "Requestor and target are the same",
 		}
@@ -57,26 +57,30 @@ func (req *CreateSubscriptionRequest) isValid() error {
 
 // CreateSubscription handles requests to create a subscription
 func (h Handler) CreateSubscription() http.HandlerFunc {
-	return handler.ErrHandler(func(w http.ResponseWriter, r *http.Request) error {
+	return handler.ErrorHandler(func(w http.ResponseWriter, r *http.Request) error {
 		var req CreateSubscriptionRequest
+		// Parse request body
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			return handler.HandlerErr{
+			return handler.HandlerError{
 				Code:        http.StatusBadRequest,
 				Description: "Invalid JSON request",
 			}
 		}
 
+		// Validate request
 		if err := req.isValid(); err != nil {
 			return err
 		}
 
+		// Create subscription
 		if _, err := h.relationshipService.CreateSubscription(r.Context(), relationship.CreateSubscriptionInput{
 			Requestor: req.Requestor,
 			Target:    req.Target,
 		}); err != nil {
-			return handler.ConvertErr(err)
+			return handler.ConvertError(err)
 		}
 
+		// Success
 		json.NewEncoder(w).Encode(handler.SuccessResponse{
 			Success: true,
 		})

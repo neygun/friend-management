@@ -21,7 +21,7 @@ func (req *GetFriendsRequest) isValid() error {
 
 	// check if email exists
 	if req.Email == "" {
-		return handler.HandlerErr{
+		return handler.HandlerError{
 			Code:        http.StatusBadRequest,
 			Description: "Missing email field",
 		}
@@ -29,7 +29,7 @@ func (req *GetFriendsRequest) isValid() error {
 
 	// check if the email is valid
 	if !util.IsEmail(req.Email) {
-		return handler.HandlerErr{
+		return handler.HandlerError{
 			Code:        http.StatusBadRequest,
 			Description: "Invalid email",
 		}
@@ -40,25 +40,29 @@ func (req *GetFriendsRequest) isValid() error {
 
 // GetFriendsList handles requests to retrieve the friends list for an email address
 func (h Handler) GetFriendsList() http.HandlerFunc {
-	return handler.ErrHandler(func(w http.ResponseWriter, r *http.Request) error {
+	return handler.ErrorHandler(func(w http.ResponseWriter, r *http.Request) error {
 		var req GetFriendsRequest
+		// Parse request body
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			return handler.HandlerErr{
+			return handler.HandlerError{
 				Code:        http.StatusBadRequest,
 				Description: "Invalid JSON request",
 			}
 		}
 
+		// Validate request
 		if err := req.isValid(); err != nil {
 			return err
 		}
 
+		// Get friends list
 		friendsList, count, err := h.relationshipService.GetFriendsList(r.Context(), relationship.GetFriendsInput{Email: req.Email})
 		if err != nil {
-			return handler.ConvertErr(err)
+			return handler.ConvertError(err)
 		}
 
-		json.NewEncoder(w).Encode(handler.GetFriendsSuccess{
+		// Success
+		json.NewEncoder(w).Encode(GetFriendsSuccess{
 			Success: true,
 			Friends: friendsList,
 			Count:   count,

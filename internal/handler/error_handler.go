@@ -6,12 +6,15 @@ import (
 	"net/http"
 )
 
-// ErrHandler handles errors from handler methods and responses JSON
-func ErrHandler(handlerFunc func(w http.ResponseWriter, r *http.Request) error) http.HandlerFunc {
+// ErrorHandler handles errors from handler methods and responses JSON
+func ErrorHandler(handlerFunc func(w http.ResponseWriter, r *http.Request) error) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
+
+		// Catch handler error
 		if err := handlerFunc(w, r); err != nil {
-			herr, ok := err.(HandlerErr)
+			// Write HandlerError if err is HandlerError
+			herr, ok := err.(HandlerError)
 			if ok {
 				w.WriteHeader(herr.Code)
 
@@ -24,6 +27,7 @@ func ErrHandler(handlerFunc func(w http.ResponseWriter, r *http.Request) error) 
 				return
 			}
 
+			// Write internal error
 			w.WriteHeader(http.StatusInternalServerError)
 
 			json.NewEncoder(w).Encode(Response{

@@ -21,7 +21,7 @@ func (req *UserRequest) isValid() error {
 
 	// check if email exists
 	if req.Email == "" {
-		return handler.HandlerErr{
+		return handler.HandlerError{
 			Code:        http.StatusBadRequest,
 			Description: "Missing email field",
 		}
@@ -29,7 +29,7 @@ func (req *UserRequest) isValid() error {
 
 	// check if the email is valid
 	if !util.IsEmail(req.Email) {
-		return handler.HandlerErr{
+		return handler.HandlerError{
 			Code:        http.StatusBadRequest,
 			Description: "Invalid email",
 		}
@@ -40,25 +40,29 @@ func (req *UserRequest) isValid() error {
 
 // CreateUser handles requests to create a user
 func (h Handler) CreateUser() http.HandlerFunc {
-	return handler.ErrHandler(func(w http.ResponseWriter, r *http.Request) error {
+	return handler.ErrorHandler(func(w http.ResponseWriter, r *http.Request) error {
 		var req UserRequest
+		// Parse request body
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			return handler.HandlerErr{
+			return handler.HandlerError{
 				Code:        http.StatusBadRequest,
 				Description: "Invalid JSON request",
 			}
 		}
 
+		// Validate request
 		if err := req.isValid(); err != nil {
 			return err
 		}
 
+		// Create user
 		if _, err := h.userService.CreateUser(r.Context(), model.User{
 			Email: req.Email,
 		}); err != nil {
-			return handler.ConvertErr(err)
+			return handler.ConvertError(err)
 		}
 
+		// Success
 		json.NewEncoder(w).Encode(handler.SuccessResponse{
 			Success: true,
 		})

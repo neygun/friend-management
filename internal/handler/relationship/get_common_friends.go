@@ -24,7 +24,7 @@ func (req *GetCommonFriendsRequest) isValid() error {
 	// check valid emails
 	for _, v := range req.Friends {
 		if !util.IsEmail(v) {
-			return handler.HandlerErr{
+			return handler.HandlerError{
 				Code:        http.StatusBadRequest,
 				Description: "Invalid email",
 			}
@@ -33,7 +33,7 @@ func (req *GetCommonFriendsRequest) isValid() error {
 
 	// check if number of emails = 2
 	if len(req.Friends) != 2 {
-		return handler.HandlerErr{
+		return handler.HandlerError{
 			Code:        http.StatusBadRequest,
 			Description: "The number of emails must be 2",
 		}
@@ -41,7 +41,7 @@ func (req *GetCommonFriendsRequest) isValid() error {
 
 	// check if the emails are the same
 	if req.Friends[0] == req.Friends[1] {
-		return handler.HandlerErr{
+		return handler.HandlerError{
 			Code:        http.StatusBadRequest,
 			Description: "The emails are the same",
 		}
@@ -51,24 +51,28 @@ func (req *GetCommonFriendsRequest) isValid() error {
 
 // GetCommonFriends handles requests to retrieve the common friends list between two email addresses
 func (h Handler) GetCommonFriends() http.HandlerFunc {
-	return handler.ErrHandler(func(w http.ResponseWriter, r *http.Request) error {
+	return handler.ErrorHandler(func(w http.ResponseWriter, r *http.Request) error {
 		var req GetCommonFriendsRequest
+		// Parse request body
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			return handler.HandlerErr{
+			return handler.HandlerError{
 				Code:        http.StatusBadRequest,
 				Description: "Invalid JSON request",
 			}
 		}
 
+		// Validate request
 		if err := req.isValid(); err != nil {
 			return err
 		}
 
+		// Get common friends
 		commonFriends, count, err := h.relationshipService.GetCommonFriends(r.Context(), relationship.GetCommonFriendsInput{Friends: req.Friends})
 		if err != nil {
-			return handler.ConvertErr(err)
+			return handler.ConvertError(err)
 		}
 
+		// Success
 		json.NewEncoder(w).Encode(handler.GetFriendsSuccess{
 			Success: true,
 			Friends: commonFriends,

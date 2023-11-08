@@ -146,13 +146,13 @@ func TestHandler_CreateFriendConnection(t *testing.T) {
 			req = req.WithContext(ctx)
 
 			mockRelationshipService := relationship.NewMockService(t)
-
-			// When
 			if tc.mockCreateFriendConnService.expCall {
 				mockRelationshipService.ExpectedCalls = []*mock.Call{
 					mockRelationshipService.On("CreateFriendConnection", ctx, tc.mockCreateFriendConnService.input).Return(tc.mockCreateFriendConnService.output, tc.mockCreateFriendConnService.err),
 				}
 			}
+
+			// When
 			instance := New(mockRelationshipService)
 			handler := instance.CreateFriendConnection()
 			handler.ServeHTTP(res, req)
