@@ -26,13 +26,13 @@ func route(userHandler user.Handler, relationshipHandler relationship.Handler) h
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.URLFormat)
 
-	router.InitRouter(r, userHandler, relationshipHandler)
+	router.Init(r, userHandler, relationshipHandler)
 
 	return r
 }
 
 func main() {
-	db, err := util.Init()
+	db, err := util.InitDB()
 	if err != nil {
 		panic(err)
 	}

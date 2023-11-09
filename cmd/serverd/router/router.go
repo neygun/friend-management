@@ -8,8 +8,8 @@ import (
 	"github.com/neygun/friend-management/internal/handler/user"
 )
 
-// InitRouter init a router
-func InitRouter(r *chi.Mux, userHandler user.Handler, relationshipHandler relationship.Handler) {
+// Init init a router
+func Init(r *chi.Mux, userHandler user.Handler, relationshipHandler relationship.Handler) {
 	r.Post("/users", userHandler.CreateUser())
 	r.Post("/friends", relationshipHandler.CreateFriendConnection())
 	r.Post("/friends/list", relationshipHandler.GetFriendsList())

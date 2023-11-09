@@ -73,7 +73,7 @@ func (h Handler) GetCommonFriends() http.HandlerFunc {
 		}
 
 		// Success
-		json.NewEncoder(w).Encode(handler.GetFriendsSuccess{
+		json.NewEncoder(w).Encode(GetFriendsSuccess{
 			Success: true,
 			Friends: commonFriends,
 			Count:   count,
