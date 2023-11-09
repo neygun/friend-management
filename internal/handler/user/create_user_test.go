@@ -88,13 +88,13 @@ func TestHandler_CreateUser(t *testing.T) {
 			req = req.WithContext(ctx)
 
 			mockUserService := user.NewMockService(t)
-
-			// When
 			if tc.mockCreateUserService.expCall {
 				mockUserService.ExpectedCalls = []*mock.Call{
 					mockUserService.On("CreateUser", ctx, tc.mockCreateUserService.input).Return(tc.mockCreateUserService.output, tc.mockCreateUserService.err),
 				}
 			}
+
+			// When
 			instance := New(mockUserService)
 			handler := instance.CreateUser()
 			handler.ServeHTTP(res, req)

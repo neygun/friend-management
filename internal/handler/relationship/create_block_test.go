@@ -128,13 +128,13 @@ func TestHandler_CreateBlock(t *testing.T) {
 			req = req.WithContext(ctx)
 
 			mockRelationshipService := relationship.NewMockService(t)
-
-			// When
 			if tc.mockCreateBlockService.expCall {
 				mockRelationshipService.ExpectedCalls = []*mock.Call{
 					mockRelationshipService.On("CreateBlock", ctx, tc.mockCreateBlockService.input).Return(tc.mockCreateBlockService.output, tc.mockCreateBlockService.err),
 				}
 			}
+
+			// When
 			instance := New(mockRelationshipService)
 			handler := instance.CreateBlock()
 			handler.ServeHTTP(res, req)

@@ -128,13 +128,13 @@ func TestHandler_CreateSubscription(t *testing.T) {
 			req = req.WithContext(ctx)
 
 			mockRelationshipService := relationship.NewMockService(t)
-
-			// When
 			if tc.mockCreateSubscriptionService.expCall {
 				mockRelationshipService.ExpectedCalls = []*mock.Call{
 					mockRelationshipService.On("CreateSubscription", ctx, tc.mockCreateSubscriptionService.input).Return(tc.mockCreateSubscriptionService.output, tc.mockCreateSubscriptionService.err),
 				}
 			}
+
+			// When
 			instance := New(mockRelationshipService)
 			handler := instance.CreateSubscription()
 			handler.ServeHTTP(res, req)

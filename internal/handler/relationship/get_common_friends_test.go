@@ -115,14 +115,14 @@ func TestHandler_GetCommonFriends(t *testing.T) {
 			req = req.WithContext(ctx)
 
 			mockRelationshipService := relationship.NewMockService(t)
-
-			// When
 			if tc.mockGetCommonFriendsService.expCall {
 				mockRelationshipService.ExpectedCalls = []*mock.Call{
 					mockRelationshipService.On("GetCommonFriends", ctx, tc.mockGetCommonFriendsService.input).
 						Return(tc.mockGetCommonFriendsService.commonFriends, tc.mockGetCommonFriendsService.count, tc.mockGetCommonFriendsService.err),
 				}
 			}
+
+			// When
 			instance := New(mockRelationshipService)
 			handler := instance.GetCommonFriends()
 			handler.ServeHTTP(res, req)

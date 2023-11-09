@@ -107,13 +107,13 @@ func TestHandler_GetEmailsReceivingUpdates(t *testing.T) {
 			req = req.WithContext(ctx)
 
 			mockRelationshipService := relationship.NewMockService(t)
-
-			// When
 			if tc.mockGetEmailsReceivingUpdatesService.expCall {
 				mockRelationshipService.ExpectedCalls = []*mock.Call{
 					mockRelationshipService.On("GetEmailsReceivingUpdates", ctx, tc.mockGetEmailsReceivingUpdatesService.input).Return(tc.mockGetEmailsReceivingUpdatesService.output, tc.mockGetEmailsReceivingUpdatesService.err),
 				}
 			}
+
+			// When
 			instance := New(mockRelationshipService)
 			handler := instance.GetEmailsReceivingUpdates()
 			handler.ServeHTTP(res, req)
