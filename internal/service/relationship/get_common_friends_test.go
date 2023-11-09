@@ -165,7 +165,6 @@ func TestService_GetCommonFriends(t *testing.T) {
 			mockUserRepo := user.NewMockRepository(t)
 			mockRelationshipRepo := relationship.NewMockRepository(t)
 
-			// When
 			if tc.mockGetByCriteriaRepo.expCall {
 				mockUserRepo.ExpectedCalls = []*mock.Call{
 					mockUserRepo.On("GetByCriteria", ctx, tc.mockGetByCriteriaRepo.input).Return(tc.mockGetByCriteriaRepo.output, tc.mockGetByCriteriaRepo.err),
@@ -179,6 +178,7 @@ func TestService_GetCommonFriends(t *testing.T) {
 				}
 			}
 
+			// When
 			instance := New(mockUserRepo, mockRelationshipRepo)
 			commonFriends, count, err := instance.GetCommonFriends(ctx, tc.givenInput)
 

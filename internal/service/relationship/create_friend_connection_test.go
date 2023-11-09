@@ -302,7 +302,6 @@ func TestService_CreateFriendConnection(t *testing.T) {
 			mockUserRepo := user.NewMockRepository(t)
 			mockRelationshipRepo := relationship.NewMockRepository(t)
 
-			// When
 			if tc.mockGetByCriteriaRepo.expCall {
 				mockUserRepo.ExpectedCalls = []*mock.Call{
 					mockUserRepo.On("GetByCriteria", ctx, tc.mockGetByCriteriaRepo.input).Return(tc.mockGetByCriteriaRepo.output, tc.mockGetByCriteriaRepo.err),
@@ -321,6 +320,7 @@ func TestService_CreateFriendConnection(t *testing.T) {
 				)
 			}
 
+			// When
 			instance := New(mockUserRepo, mockRelationshipRepo)
 			rs, err := instance.CreateFriendConnection(ctx, tc.givenInput)
 

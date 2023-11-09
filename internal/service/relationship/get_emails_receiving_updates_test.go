@@ -214,7 +214,6 @@ func TestService_GetEmailsReceivingUpdates(t *testing.T) {
 			mockUserRepo := user.NewMockRepository(t)
 			mockRelationshipRepo := relationship.NewMockRepository(t)
 
-			// When
 			if tc.mockGetByCriteriaRepos[0].expCall {
 				mockUserRepo.ExpectedCalls = []*mock.Call{
 					mockUserRepo.On("GetByCriteria", ctx, tc.mockGetByCriteriaRepos[0].input).Return(tc.mockGetByCriteriaRepos[0].output, tc.mockGetByCriteriaRepos[0].err),
@@ -234,6 +233,7 @@ func TestService_GetEmailsReceivingUpdates(t *testing.T) {
 				}
 			}
 
+			// When
 			instance := New(mockUserRepo, mockRelationshipRepo)
 			rs, err := instance.GetEmailsReceivingUpdates(ctx, tc.givenInput)
 

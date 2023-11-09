@@ -397,7 +397,6 @@ func TestService_CreateBlock(t *testing.T) {
 			mockUserRepo := user.NewMockRepository(t)
 			mockRelationshipRepo := relationship.NewMockRepository(t)
 
-			// When
 			if tc.mockGetByCriteriaUserRepo.expCall {
 				mockUserRepo.ExpectedCalls = []*mock.Call{
 					mockUserRepo.On("GetByCriteria", ctx, tc.mockGetByCriteriaUserRepo.input).Return(tc.mockGetByCriteriaUserRepo.output, tc.mockGetByCriteriaUserRepo.err),
@@ -422,6 +421,7 @@ func TestService_CreateBlock(t *testing.T) {
 				)
 			}
 
+			// When
 			instance := New(mockUserRepo, mockRelationshipRepo)
 			rs, err := instance.CreateBlock(ctx, tc.givenInput)
 

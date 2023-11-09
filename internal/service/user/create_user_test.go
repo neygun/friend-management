@@ -66,13 +66,13 @@ func TestService_CreateUser(t *testing.T) {
 			ctx := context.Background()
 			mockUserRepo := user.NewMockRepository(t)
 
-			// When
 			if tc.mockCreateRepo.expCall {
 				mockUserRepo.ExpectedCalls = []*mock.Call{
 					mockUserRepo.On("Create", ctx, tc.mockCreateRepo.input).Return(tc.mockCreateRepo.output, tc.mockCreateRepo.err),
 				}
 			}
 
+			// When
 			instance := New(mockUserRepo)
 			rs, err := instance.CreateUser(ctx, tc.givenUser)
 
