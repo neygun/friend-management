@@ -8,7 +8,7 @@ import (
 	"github.com/neygun/friend-management/internal/handler/user"
 )
 
-// Init init a router
+// Init defines API endpoints
 func Init(r *chi.Mux, userHandler user.Handler, relationshipHandler relationship.Handler) {
 	r.Post("/users", userHandler.CreateUser())
 	r.Post("/friends", relationshipHandler.CreateFriendConnection())
