@@ -13,10 +13,10 @@ import (
 )
 
 func TestService_GetFriendsList(t *testing.T) {
-	type mockGetByCriteriaRepo struct {
+	type mockGetByEmailRepo struct {
 		expCall bool
-		input   model.UserFilter
-		output  []model.User
+		input   string
+		output  model.User
 		err     error
 	}
 
@@ -29,7 +29,7 @@ func TestService_GetFriendsList(t *testing.T) {
 
 	type args struct {
 		givenInput             GetFriendsInput
-		mockGetByCriteriaRepo  mockGetByCriteriaRepo
+		mockGetByEmailRepo     mockGetByEmailRepo
 		mockGetFriendsListRepo mockGetFriendsListRepo
 		expFriendsList         []string
 		expCount               int
@@ -41,48 +41,34 @@ func TestService_GetFriendsList(t *testing.T) {
 			givenInput: GetFriendsInput{
 				Email: "test@example.com",
 			},
-			mockGetByCriteriaRepo: mockGetByCriteriaRepo{
+			mockGetByEmailRepo: mockGetByEmailRepo{
 				expCall: true,
-				input: model.UserFilter{
-					Emails: []string{
-						"test@example.com",
-					},
-				},
-				output: []model.User{},
+				input:   "test@example.com",
+				output:  model.User{},
 			},
 			expErr: ErrUserNotFound,
 		},
-		"err - GetByCriteria": {
+		"err - GetByEmail": {
 			givenInput: GetFriendsInput{
 				Email: "test@example.com",
 			},
-			mockGetByCriteriaRepo: mockGetByCriteriaRepo{
+			mockGetByEmailRepo: mockGetByEmailRepo{
 				expCall: true,
-				input: model.UserFilter{
-					Emails: []string{
-						"test@example.com",
-					},
-				},
-				err: errors.New("GetByCriteria error"),
+				input:   "test@example.com",
+				err:     errors.New("GetByEmail error"),
 			},
-			expErr: errors.New("GetByCriteria error"),
+			expErr: errors.New("GetByEmail error"),
 		},
 		"err - GetFriendsList": {
 			givenInput: GetFriendsInput{
 				Email: "test@example.com",
 			},
-			mockGetByCriteriaRepo: mockGetByCriteriaRepo{
+			mockGetByEmailRepo: mockGetByEmailRepo{
 				expCall: true,
-				input: model.UserFilter{
-					Emails: []string{
-						"test@example.com",
-					},
-				},
-				output: []model.User{
-					{
-						ID:    1,
-						Email: "test@example.com",
-					},
+				input:   "test@example.com",
+				output: model.User{
+					ID:    1,
+					Email: "test@example.com",
 				},
 			},
 			mockGetFriendsListRepo: mockGetFriendsListRepo{
@@ -96,18 +82,12 @@ func TestService_GetFriendsList(t *testing.T) {
 			givenInput: GetFriendsInput{
 				Email: "test@example.com",
 			},
-			mockGetByCriteriaRepo: mockGetByCriteriaRepo{
+			mockGetByEmailRepo: mockGetByEmailRepo{
 				expCall: true,
-				input: model.UserFilter{
-					Emails: []string{
-						"test@example.com",
-					},
-				},
-				output: []model.User{
-					{
-						ID:    1,
-						Email: "test@example.com",
-					},
+				input:   "test@example.com",
+				output: model.User{
+					ID:    1,
+					Email: "test@example.com",
 				},
 			},
 			mockGetFriendsListRepo: mockGetFriendsListRepo{
@@ -133,9 +113,9 @@ func TestService_GetFriendsList(t *testing.T) {
 			mockUserRepo := user.NewMockRepository(t)
 			mockRelationshipRepo := relationship.NewMockRepository(t)
 
-			if tc.mockGetByCriteriaRepo.expCall {
+			if tc.mockGetByEmailRepo.expCall {
 				mockUserRepo.ExpectedCalls = []*mock.Call{
-					mockUserRepo.On("GetByCriteria", ctx, tc.mockGetByCriteriaRepo.input).Return(tc.mockGetByCriteriaRepo.output, tc.mockGetByCriteriaRepo.err),
+					mockUserRepo.On("GetByEmail", ctx, tc.mockGetByEmailRepo.input).Return(tc.mockGetByEmailRepo.output, tc.mockGetByEmailRepo.err),
 				}
 			}
 

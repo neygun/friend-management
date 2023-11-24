@@ -27,6 +27,7 @@ func (r repository) GetByCriteria(ctx context.Context, filter model.UserFilter) 
 		result[i] = model.User{
 			ID:        u.ID,
 			Email:     u.Email,
+			Password:  u.Password,
 			CreatedAt: u.CreatedAt,
 			UpdatedAt: u.UpdatedAt,
 		}

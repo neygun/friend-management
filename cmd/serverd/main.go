@@ -39,8 +39,9 @@ func main() {
 
 	relationshipRepo := relationshipRepository.New(db)
 	userRepo := userRepository.New(db)
+	bpe := userService.BCryptPasswordEncoder{}
 
-	userService := userService.New(userRepo)
+	userService := userService.New(userRepo, bpe)
 	userHandler := user.New(userService)
 
 	relationshipService := relationshipService.New(userRepo, relationshipRepo)

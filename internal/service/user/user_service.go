@@ -15,12 +15,14 @@ type Service interface {
 }
 
 type service struct {
-	userRepo user.Repository
+	userRepo        user.Repository
+	passwordEncoder PasswordEncoder
 }
 
 // New instantiates a user service
-func New(userRepo user.Repository) Service {
+func New(userRepo user.Repository, passwordEncoder PasswordEncoder) Service {
 	return service{
-		userRepo: userRepo,
+		userRepo:        userRepo,
+		passwordEncoder: passwordEncoder,
 	}
 }

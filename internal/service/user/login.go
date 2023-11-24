@@ -28,7 +28,7 @@ func (s service) Login(ctx context.Context, input LoginInput) (string, error) {
 	}
 
 	// check password
-	if !CheckPasswordHash(input.Password, user.Password) {
+	if !s.passwordEncoder.CheckPasswordHash(input.Password, user.Password) {
 		return "", ErrWrongPassword
 	}
 

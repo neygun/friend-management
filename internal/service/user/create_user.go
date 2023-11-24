@@ -20,7 +20,7 @@ func (s service) CreateUser(ctx context.Context, user model.User) (model.User, e
 	}
 
 	// hash password
-	hashedPassword, err := HashPassword(user.Password)
+	hashedPassword, err := s.passwordEncoder.HashPassword(user.Password)
 	if err != nil {
 		return model.User{}, err
 	}
