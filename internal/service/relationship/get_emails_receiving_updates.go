@@ -16,13 +16,13 @@ type GetEmailsReceivingUpdatesInput struct {
 // GetEmailsReceivingUpdates retrieves emails that can receive updates from an email
 func (s service) GetEmailsReceivingUpdates(ctx context.Context, input GetEmailsReceivingUpdatesInput) ([]string, error) {
 	// get sender by email
-	sender, err := s.userRepo.GetByCriteria(ctx, model.UserFilter{Emails: []string{input.Sender}})
+	sender, err := s.userRepo.GetByEmail(ctx, input.Sender)
 	if err != nil {
 		return nil, err
 	}
 
 	// check if the sender exists
-	if len(sender) == 0 {
+	if sender == (model.User{}) {
 		return nil, ErrUserNotFound
 	}
 
@@ -45,7 +45,7 @@ func (s service) GetEmailsReceivingUpdates(ctx context.Context, input GetEmailsR
 	}
 
 	// get recipients
-	recipients, err := s.relationshipRepo.GetEmailsReceivingUpdates(ctx, sender[0].ID, mentionedUserIDs)
+	recipients, err := s.relationshipRepo.GetEmailsReceivingUpdates(ctx, sender.ID, mentionedUserIDs)
 	if err != nil {
 		return nil, err
 	}

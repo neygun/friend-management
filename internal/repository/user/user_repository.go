@@ -12,6 +12,7 @@ import (
 type Repository interface {
 	GetByCriteria(ctx context.Context, filter model.UserFilter) ([]model.User, error)
 	Create(ctx context.Context, user model.User) (model.User, error)
+	GetByEmail(ctx context.Context, email string) (model.User, error)
 }
 
 type repository struct {

@@ -15,8 +15,9 @@ func (r repository) Create(ctx context.Context, user model.User) (model.User, er
 		return model.User{}, err
 	}
 	u := ormmodel.User{
-		ID:    int64(newID),
-		Email: user.Email,
+		ID:       int64(newID),
+		Email:    user.Email,
+		Password: user.Password,
 	}
 
 	if err := u.Insert(ctx, r.db, boil.Infer()); err != nil {
@@ -26,6 +27,7 @@ func (r repository) Create(ctx context.Context, user model.User) (model.User, er
 	return model.User{
 		ID:        u.ID,
 		Email:     u.Email,
+		Password:  u.Password,
 		CreatedAt: u.CreatedAt,
 		UpdatedAt: u.UpdatedAt,
 	}, nil

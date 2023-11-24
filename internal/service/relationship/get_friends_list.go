@@ -14,18 +14,18 @@ type GetFriendsInput struct {
 // GetFriendsList returns the friends list of an email and count
 func (s service) GetFriendsList(ctx context.Context, input GetFriendsInput) ([]string, int, error) {
 	// get user by email
-	users, err := s.userRepo.GetByCriteria(ctx, model.UserFilter{Emails: []string{input.Email}})
+	user, err := s.userRepo.GetByEmail(ctx, input.Email)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	// check if there is a user with the email
-	if len(users) == 0 {
+	// check if the user exists
+	if user == (model.User{}) {
 		return nil, 0, ErrUserNotFound
 	}
 
 	// Get friends list
-	friendsList, err := s.relationshipRepo.GetFriendsList(ctx, users[0].ID)
+	friendsList, err := s.relationshipRepo.GetFriendsList(ctx, user.ID)
 	if err != nil {
 		return nil, 0, err
 	}

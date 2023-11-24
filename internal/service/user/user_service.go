@@ -10,6 +10,8 @@ import (
 // Service represents user service
 type Service interface {
 	CreateUser(ctx context.Context, user model.User) (model.User, error)
+	Login(ctx context.Context, input LoginInput) (string, error)
+	Logout(ctx context.Context, input LogoutInput) error
 }
 
 type service struct {

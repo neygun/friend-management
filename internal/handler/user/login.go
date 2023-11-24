@@ -6,17 +6,17 @@ import (
 	"strings"
 
 	"github.com/neygun/friend-management/internal/handler"
-	"github.com/neygun/friend-management/internal/model"
+	"github.com/neygun/friend-management/internal/service/user"
 	"github.com/neygun/friend-management/pkg/util"
 )
 
-// CreateUserRequest matches JSON request to create a user
-type CreateUserRequest struct {
+// LoginRequest matches JSON request to login
+type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-func (req *CreateUserRequest) isValid() error {
+func (req *LoginRequest) isValid() error {
 	// trim space
 	req.Email = strings.TrimSpace(req.Email)
 	req.Password = strings.TrimSpace(req.Password)
@@ -48,10 +48,10 @@ func (req *CreateUserRequest) isValid() error {
 	return nil
 }
 
-// CreateUser handles requests to create a user
-func (h Handler) CreateUser() http.HandlerFunc {
+// Login handles requests to login
+func (h Handler) Login() http.HandlerFunc {
 	return handler.ErrorHandler(func(w http.ResponseWriter, r *http.Request) error {
-		var req CreateUserRequest
+		var req LoginRequest
 		// Parse request body
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			return handler.HandlerError{
@@ -65,17 +65,19 @@ func (h Handler) CreateUser() http.HandlerFunc {
 			return err
 		}
 
-		// Create user
-		if _, err := h.userService.CreateUser(r.Context(), model.User{
+		// Login
+		token, err := h.userService.Login(r.Context(), user.LoginInput{
 			Email:    req.Email,
 			Password: req.Password,
-		}); err != nil {
+		})
+		if err != nil {
 			return handler.ConvertError(err)
 		}
 
 		// Success
-		json.NewEncoder(w).Encode(handler.SuccessResponse{
+		json.NewEncoder(w).Encode(LoginSuccess{
 			Success: true,
+			Token:   token,
 		})
 
 		return nil

@@ -37,3 +37,9 @@ services:
     volumes:
       - ./data/migration:/migration
     
+  redis:
+    container_name: redis
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
