@@ -9,6 +9,7 @@ import (
 	"github.com/lestrrat-go/jwx/v2/jwt"
 	"github.com/neygun/friend-management/internal/handler/relationship"
 	"github.com/neygun/friend-management/internal/handler/user"
+	"github.com/neygun/friend-management/internal/service/authentication"
 	"github.com/neygun/friend-management/pkg/util"
 	"github.com/redis/go-redis/v9"
 )
@@ -16,7 +17,7 @@ import (
 var tokenAuth = jwtauth.New("HS256", []byte("secret"), nil)
 
 // Init defines API endpoints
-func Init(r *chi.Mux, userHandler user.Handler, relationshipHandler relationship.Handler) {
+func Init(r *chi.Mux, userHandler user.Handler, relationshipHandler relationship.Handler, authService authentication.Service) {
 
 	// Protected routes
 	r.Group(func(r chi.Router) {
@@ -24,7 +25,7 @@ func Init(r *chi.Mux, userHandler user.Handler, relationshipHandler relationship
 		r.Use(jwtauth.Verifier(tokenAuth))
 
 		// Handle valid / invalid tokens
-		r.Use(AuthenticationMiddleware)
+		r.Use(AuthenticationMiddleware(authService))
 
 		r.Post("/friends", relationshipHandler.CreateFriendConnection())
 		r.Post("/friends/list", relationshipHandler.GetFriendsList())
@@ -46,39 +47,68 @@ func Init(r *chi.Mux, userHandler user.Handler, relationshipHandler relationship
 	})
 }
 
-func AuthenticationMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token, _, err := jwtauth.FromContext(r.Context())
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusUnauthorized)
-			return
-		}
+// write a func return AuthenticationMiddleware with param Service
+func AuthenticationMiddleware(svc authentication.Service) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			token, _, err := jwtauth.FromContext(r.Context())
+			if err != nil {
+				errorHandler(w, err, http.StatusUnauthorized)
+				return
+			}
 
-		tokenString := jwtauth.TokenFromHeader(r)
-		isBlacklisted, err := isBlacklisted(tokenString)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusUnauthorized)
-			return
-		}
+			tokenString := jwtauth.TokenFromHeader(r)
+			isBlacklisted, err := svc.IsBlacklisted(tokenString)
+			if err != nil {
+				errorHandler(w, errInternalServerError, http.StatusInternalServerError)
+				return
+			}
 
-		if token == nil || jwt.Validate(token) != nil || isBlacklisted {
-			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
-			return
-		}
+			if token == nil || jwt.Validate(token) != nil || isBlacklisted {
+				errorHandler(w, errUnauthorized, http.StatusUnauthorized)
+				return
+			}
 
-		// Token is authenticated, pass it through
-		next.ServeHTTP(w, r)
-	})
+			// Token is authenticated, pass it through
+			next.ServeHTTP(w, r)
+		})
+	}
 }
+
+// func AuthenticationMiddleware(next http.Handler) http.Handler {
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 		token, _, err := jwtauth.FromContext(r.Context())
+// 		if err != nil {
+// 			errorHandler(w, err, http.StatusUnauthorized)
+// 			return
+// 		}
+
+// 		tokenString := jwtauth.TokenFromHeader(r)
+// 		isBlacklisted, err := isBlacklisted(tokenString)
+// 		if err != nil {
+// 			errorHandler(w, errInternalServerError, http.StatusInternalServerError)
+// 			return
+// 		}
+
+// 		if token == nil || jwt.Validate(token) != nil || isBlacklisted {
+// 			errorHandler(w, errUnauthorized, http.StatusUnauthorized)
+// 			return
+// 		}
+
+// 		// Token is authenticated, pass it through
+// 		next.ServeHTTP(w, r)
+// 	})
+// }
 
 func isBlacklisted(token string) (bool, error) {
 	ctx := context.Background()
 	client := util.NewRedisClient()
 	result, err := client.Get(ctx, token).Result()
-	if err == redis.Nil {
-		// Token not found in the blacklist
-		return false, nil
-	} else if err != nil {
+	if err != nil {
+		if err == redis.Nil {
+			// Token not found in the blacklist
+			return false, nil
+		}
 		return false, err
 	}
 
