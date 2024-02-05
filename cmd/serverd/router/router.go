@@ -1,7 +1,6 @@
 package router
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -10,8 +9,6 @@ import (
 	"github.com/neygun/friend-management/internal/handler/relationship"
 	"github.com/neygun/friend-management/internal/handler/user"
 	"github.com/neygun/friend-management/internal/service/authentication"
-	"github.com/neygun/friend-management/pkg/util"
-	"github.com/redis/go-redis/v9"
 )
 
 var tokenAuth = jwtauth.New("HS256", []byte("secret"), nil)
@@ -33,6 +30,14 @@ func Init(r *chi.Mux, userHandler user.Handler, relationshipHandler relationship
 		r.Post("/friends/subscription", relationshipHandler.CreateSubscription())
 		r.Post("/friends/block", relationshipHandler.CreateBlock())
 		r.Post("/friends/recipients", relationshipHandler.GetEmailsReceivingUpdates())
+	})
+
+	r.Group(func(r chi.Router) {
+		// Seek, verify and validate JWT tokens
+		r.Use(jwtauth.Verifier(tokenAuth))
+
+		// Handle valid / invalid tokens
+		r.Use(AuthenticationMiddleware(authService))
 
 		r.Post("/users/logout", userHandler.Logout())
 	})
@@ -47,7 +52,6 @@ func Init(r *chi.Mux, userHandler user.Handler, relationshipHandler relationship
 	})
 }
 
-// write a func return AuthenticationMiddleware with param Service
 func AuthenticationMiddleware(svc authentication.Service) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -58,7 +62,7 @@ func AuthenticationMiddleware(svc authentication.Service) func(next http.Handler
 			}
 
 			tokenString := jwtauth.TokenFromHeader(r)
-			isBlacklisted, err := svc.IsBlacklisted(tokenString)
+			isBlacklisted, err := svc.CheckBlacklistedToken(r.Context(), tokenString)
 			if err != nil {
 				errorHandler(w, errInternalServerError, http.StatusInternalServerError)
 				return
@@ -99,22 +103,3 @@ func AuthenticationMiddleware(svc authentication.Service) func(next http.Handler
 // 		next.ServeHTTP(w, r)
 // 	})
 // }
-
-func isBlacklisted(token string) (bool, error) {
-	ctx := context.Background()
-	client := util.NewRedisClient()
-	result, err := client.Get(ctx, token).Result()
-	if err != nil {
-		if err == redis.Nil {
-			// Token not found in the blacklist
-			return false, nil
-		}
-		return false, err
-	}
-
-	if result == "revoked" {
-		return true, nil
-	}
-
-	return false, nil
-}
