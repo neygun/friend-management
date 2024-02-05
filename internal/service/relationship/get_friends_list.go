@@ -2,8 +2,6 @@ package relationship
 
 import (
 	"context"
-
-	"github.com/neygun/friend-management/internal/model"
 )
 
 // GetFriendsInput is the input from request to retrieve friends list
@@ -20,7 +18,7 @@ func (s service) GetFriendsList(ctx context.Context, input GetFriendsInput) ([]s
 	}
 
 	// check if the user exists
-	if user == (model.User{}) {
+	if user.ID == 0 {
 		return nil, 0, ErrUserNotFound
 	}
 

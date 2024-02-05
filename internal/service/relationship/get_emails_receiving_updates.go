@@ -22,7 +22,7 @@ func (s service) GetEmailsReceivingUpdates(ctx context.Context, input GetEmailsR
 	}
 
 	// check if the sender exists
-	if sender == (model.User{}) {
+	if sender.ID == 0 {
 		return nil, ErrUserNotFound
 	}
 
