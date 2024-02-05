@@ -1,15 +1,21 @@
 package authentication
 
+import (
+	"context"
+
+	"github.com/neygun/friend-management/internal/cache/authentication"
+)
+
 type Service interface {
-	IsBlacklisted(token string) (bool, error)
+	CheckBlacklistedToken(ctx context.Context, token string) (bool, error)
 }
 
-// type service struct {
-// 	cacheRepo authentication.Repository
-// }
+type service struct {
+	authRepo authentication.Repository
+}
 
-// func New(cacheRepo authentication.Repository) Service {
-// 	return service{
-// 		cacheRepo: cacheRepo,
-// 	}
-// }
+func New(authRepo authentication.Repository) Service {
+	return service{
+		authRepo: authRepo,
+	}
+}
