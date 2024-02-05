@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 
+	"github.com/neygun/friend-management/internal/cache/authentication"
 	"github.com/neygun/friend-management/internal/model"
 	"github.com/neygun/friend-management/internal/repository/user"
 )
@@ -15,14 +16,14 @@ type Service interface {
 }
 
 type service struct {
-	userRepo        user.Repository
-	passwordEncoder PasswordEncoder
+	userRepo user.Repository
+	authRepo authentication.Repository
 }
 
 // New instantiates a user service
-func New(userRepo user.Repository, passwordEncoder PasswordEncoder) Service {
+func New(userRepo user.Repository, authRepo authentication.Repository) Service {
 	return service{
-		userRepo:        userRepo,
-		passwordEncoder: passwordEncoder,
+		userRepo: userRepo,
+		authRepo: authRepo,
 	}
 }

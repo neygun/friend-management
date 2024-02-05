@@ -3,9 +3,6 @@ package user
 import (
 	"context"
 	"time"
-
-	"github.com/neygun/friend-management/internal/model"
-	"github.com/neygun/friend-management/pkg/util"
 )
 
 // LogoutInput is the input from request to logout
@@ -23,22 +20,13 @@ func (s service) Logout(ctx context.Context, input LogoutInput) error {
 	}
 
 	// check if the user exists
-	if user == (model.User{}) {
+	if user.ID == 0 {
 		return ErrUserNotFound
 	}
 
 	// Add the token to the blacklist with a 24-hour expiry
-	if err := addToBlacklist(input.Token, time.Hour*24); err != nil {
-		return err
-	}
-	return nil
-}
-
-func addToBlacklist(token string, expiry time.Duration) error {
-	ctx := context.Background()
-	client := util.NewRedisClient()
-	err := client.Set(ctx, token, "revoked", expiry).Err()
-	if err != nil {
+	expiration := time.Hour * 24
+	if err := s.authRepo.AddTokenToBlacklist(ctx, input.Token, expiration); err != nil {
 		return err
 	}
 	return nil

@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/go-chi/jwtauth/v5"
-	"github.com/neygun/friend-management/internal/model"
 )
 
 // LoginInput is the input from request to login
@@ -23,23 +22,31 @@ func (s service) Login(ctx context.Context, input LoginInput) (string, error) {
 	}
 
 	// check if the user exists
-	if user == (model.User{}) {
+	if user.ID == 0 {
 		return "", ErrUserNotFound
 	}
 
 	// check password
-	if !s.passwordEncoder.CheckPasswordHash(input.Password, user.Password) {
+	matched, err := checkPasswordHash(input.Password, user.Password)
+	if err != nil {
+		return "", err
+	}
+	if !matched {
 		return "", ErrWrongPassword
 	}
 
-	return initToken(user.ID)
+	return initToken(user.Email)
 }
 
-func initToken(userID int64) (string, error) {
-	tokenAuth := jwtauth.New("HS256", []byte("secret"), nil)
+const algorithm = "HS256"
+const secretKey = "secret"
+const expiryTime = time.Minute * 5
 
-	claims := map[string]interface{}{"user_id": userID}
-	jwtauth.SetExpiryIn(claims, time.Minute*5)
+func initToken(email string) (string, error) {
+	tokenAuth := jwtauth.New(algorithm, []byte(secretKey), nil)
+
+	claims := map[string]interface{}{"email": email}
+	jwtauth.SetExpiryIn(claims, expiryTime)
 
 	_, tokenString, err := tokenAuth.Encode(claims)
 	if err != nil {

@@ -9,18 +9,18 @@ import (
 // CreateUser creates a user
 func (s service) CreateUser(ctx context.Context, user model.User) (model.User, error) {
 	// get user by email
-	theUser, err := s.userRepo.GetByEmail(ctx, user.Email)
+	u, err := s.userRepo.GetByEmail(ctx, user.Email)
 	if err != nil {
 		return model.User{}, err
 	}
 
 	// check if the user exists
-	if theUser != (model.User{}) {
+	if u.ID != 0 {
 		return model.User{}, ErrUserExists
 	}
 
 	// hash password
-	hashedPassword, err := s.passwordEncoder.HashPassword(user.Password)
+	hashedPassword, err := hashPasswordWrapperFn(user.Password)
 	if err != nil {
 		return model.User{}, err
 	}

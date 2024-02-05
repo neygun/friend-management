@@ -12,13 +12,6 @@ import (
 )
 
 func TestService_CreateUser(t *testing.T) {
-	type mockHashPassword struct {
-		expCall bool
-		input   string
-		output  string
-		err     error
-	}
-
 	type mockGetByEmailRepo struct {
 		expCall bool
 		input   string
@@ -32,11 +25,19 @@ func TestService_CreateUser(t *testing.T) {
 		output  model.User
 		err     error
 	}
+
+	type mockHashPassword struct {
+		expCall bool
+		input   string
+		output  string
+		err     error
+	}
+
 	type args struct {
 		givenUser          model.User
-		mockHashPassword   mockHashPassword
 		mockGetByEmailRepo mockGetByEmailRepo
 		mockCreateRepo     mockCreateRepo
+		mockHashPassword   mockHashPassword
 		expRs              model.User
 		expErr             error
 	}
@@ -150,19 +151,22 @@ func TestService_CreateUser(t *testing.T) {
 	for scenario, tc := range tcs {
 		t.Run(scenario, func(t *testing.T) {
 			// Given
+			hashPasswordWrapperFn = func(password string) (string, error) {
+				if tc.mockHashPassword.input != password {
+					require.Error(t, errors.New("unexpected hash password input"))
+				}
+				return tc.mockHashPassword.output, tc.mockHashPassword.err
+			}
+			defer func() {
+				hashPasswordWrapperFn = hashPassword
+			}()
+
 			ctx := context.Background()
 			mockUserRepo := user.NewMockRepository(t)
-			mockPasswordEncoder := NewMockPasswordEncoder(t)
 
 			if tc.mockGetByEmailRepo.expCall {
 				mockUserRepo.ExpectedCalls = []*mock.Call{
 					mockUserRepo.On("GetByEmail", ctx, tc.mockGetByEmailRepo.input).Return(tc.mockGetByEmailRepo.output, tc.mockGetByEmailRepo.err),
-				}
-			}
-
-			if tc.mockHashPassword.expCall {
-				mockPasswordEncoder.ExpectedCalls = []*mock.Call{
-					mockPasswordEncoder.On("HashPassword", tc.mockHashPassword.input).Return(tc.mockHashPassword.output, tc.mockHashPassword.err),
 				}
 			}
 
@@ -173,7 +177,7 @@ func TestService_CreateUser(t *testing.T) {
 			}
 
 			// When
-			instance := New(mockUserRepo, mockPasswordEncoder)
+			instance := New(mockUserRepo)
 			rs, err := instance.CreateUser(ctx, tc.givenUser)
 
 			// Then
