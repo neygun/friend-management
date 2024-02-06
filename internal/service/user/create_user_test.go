@@ -5,6 +5,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/neygun/friend-management/internal/cache/authentication"
 	"github.com/neygun/friend-management/internal/model"
 	"github.com/neygun/friend-management/internal/repository/user"
 	"github.com/stretchr/testify/mock"
@@ -176,8 +177,10 @@ func TestService_CreateUser(t *testing.T) {
 				)
 			}
 
+			mockAuthRepo := authentication.NewMockRepository(t)
+
 			// When
-			instance := New(mockUserRepo)
+			instance := New(mockUserRepo, mockAuthRepo)
 			rs, err := instance.CreateUser(ctx, tc.givenUser)
 
 			// Then
