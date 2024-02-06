@@ -14,55 +14,33 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestImpl_GetByCriteria(t *testing.T) {
+func TestImpl_GetByEmail(t *testing.T) {
 	type args struct {
-		givenFilter model.UserFilter
-		isEmpty     bool
+		givenEmail  string
+		isNotFound  bool
 		expDBFailed bool
-		expRs       []model.User
+		expRs       model.User
 		expErr      error
 	}
 
 	tcs := map[string]args{
 		"success": {
-			givenFilter: model.UserFilter{
-				Emails: []string{
-					"test1@example.com",
-					"test2@example.com",
-				},
-			},
-			expRs: []model.User{
-				{
-					ID:       1,
-					Email:    "test1@example.com",
-					Password: "123456",
-				},
-				{
-					ID:       2,
-					Email:    "test2@example.com",
-					Password: "abc",
-				},
+			givenEmail: "test@example.com",
+			expRs: model.User{
+				ID:       1,
+				Email:    "test@example.com",
+				Password: "123456",
 			},
 		},
-		"empty": {
-			givenFilter: model.UserFilter{
-				Emails: []string{
-					"test1@example.com",
-					"test2@example.com",
-				},
-			},
-			isEmpty: true,
-			expRs:   []model.User{},
+		"not found": {
+			givenEmail: "test@example.com",
+			isNotFound: true,
+			expRs:      model.User{},
 		},
 		"error: db failed": {
-			givenFilter: model.UserFilter{
-				Emails: []string{
-					"test1@example.com",
-					"test2@example.com",
-				},
-			},
+			givenEmail:  "test@example.com",
 			expDBFailed: true,
-			expErr:      errors.New("ormmodel: failed to assign all query results to User slice: bind failed to execute query: sql: database is closed"),
+			expErr:      errors.New("ormmodel: failed to execute a one query for users: bind failed to execute query: sql: database is closed"),
 		},
 	}
 
@@ -78,12 +56,12 @@ func TestImpl_GetByCriteria(t *testing.T) {
 					dbMock.Close()
 					instance = New(dbMock)
 				}
-				if !tc.isEmpty {
-					test.LoadTestSQLFile(t, tx, "testdata/get_by_criteria.sql")
+				if !tc.isNotFound {
+					test.LoadTestSQLFile(t, tx, "testdata/get_by_email.sql")
 				}
 
 				// When
-				result, err := instance.GetByCriteria(ctx, tc.givenFilter)
+				result, err := instance.GetByEmail(ctx, tc.givenEmail)
 
 				// Then
 				if tc.expErr != nil {

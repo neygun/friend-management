@@ -38,21 +38,27 @@ func TestHandler_CreateUser(t *testing.T) {
 			expResponse:   "invalid_json_request.json",
 		},
 		"err - missing email field": {
-			givenRequest:  `{"test":"test"}`,
+			givenRequest:  `{"test":"test","password":"test"}`,
 			expStatusCode: http.StatusBadRequest,
 			expResponse:   "missing_email.json",
 		},
+		"err - missing password field": {
+			givenRequest:  `{"email":"test@example.com","test":"test"}`,
+			expStatusCode: http.StatusBadRequest,
+			expResponse:   "missing_password.json",
+		},
 		"err - invalid email": {
-			givenRequest:  `{"email":"testexample.com"}`,
+			givenRequest:  `{"email":"testexample.com","password":"test"}`,
 			expStatusCode: http.StatusBadRequest,
 			expResponse:   "invalid_email.json",
 		},
 		"service error": {
-			givenRequest: `{"email":"test@example.com"}`,
+			givenRequest: `{"email":"test@example.com","password":"test"}`,
 			mockCreateUserService: mockCreateUserService{
 				expCall: true,
 				input: model.User{
-					Email: "test@example.com",
+					Email:    "test@example.com",
+					Password: "test",
 				},
 				err: errors.New("test"),
 			},
@@ -60,15 +66,17 @@ func TestHandler_CreateUser(t *testing.T) {
 			expResponse:   "server_error.json",
 		},
 		"success": {
-			givenRequest: `{"email":"test@example.com"}`,
+			givenRequest: `{"email":"test@example.com","password":"test"}`,
 			mockCreateUserService: mockCreateUserService{
 				expCall: true,
 				input: model.User{
-					Email: "test@example.com",
+					Email:    "test@example.com",
+					Password: "test",
 				},
 				output: model.User{
-					ID:    1,
-					Email: "test@example.com",
+					ID:       1,
+					Email:    "test@example.com",
+					Password: "abctest",
 				},
 			},
 			expStatusCode: http.StatusOK,

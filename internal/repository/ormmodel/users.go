@@ -27,6 +27,7 @@ type User struct {
 	Email     string    `boil:"email" json:"email" toml:"email" yaml:"email"`
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	Password  string    `boil:"password" json:"password" toml:"password" yaml:"password"`
 
 	R *userR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L userL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -37,11 +38,13 @@ var UserColumns = struct {
 	Email     string
 	CreatedAt string
 	UpdatedAt string
+	Password  string
 }{
 	ID:        "id",
 	Email:     "email",
 	CreatedAt: "created_at",
 	UpdatedAt: "updated_at",
+	Password:  "password",
 }
 
 var UserTableColumns = struct {
@@ -49,11 +52,13 @@ var UserTableColumns = struct {
 	Email     string
 	CreatedAt string
 	UpdatedAt string
+	Password  string
 }{
 	ID:        "users.id",
 	Email:     "users.email",
 	CreatedAt: "users.created_at",
 	UpdatedAt: "users.updated_at",
+	Password:  "users.password",
 }
 
 // Generated where
@@ -63,11 +68,13 @@ var UserWhere = struct {
 	Email     whereHelperstring
 	CreatedAt whereHelpertime_Time
 	UpdatedAt whereHelpertime_Time
+	Password  whereHelperstring
 }{
 	ID:        whereHelperint64{field: "\"users\".\"id\""},
 	Email:     whereHelperstring{field: "\"users\".\"email\""},
 	CreatedAt: whereHelpertime_Time{field: "\"users\".\"created_at\""},
 	UpdatedAt: whereHelpertime_Time{field: "\"users\".\"updated_at\""},
+	Password:  whereHelperstring{field: "\"users\".\"password\""},
 }
 
 // UserRels is where relationship names are stored.
@@ -108,8 +115,8 @@ func (r *userR) GetTargetRelationships() RelationshipSlice {
 type userL struct{}
 
 var (
-	userAllColumns            = []string{"id", "email", "created_at", "updated_at"}
-	userColumnsWithoutDefault = []string{"id", "email"}
+	userAllColumns            = []string{"id", "email", "created_at", "updated_at", "password"}
+	userColumnsWithoutDefault = []string{"id", "email", "password"}
 	userColumnsWithDefault    = []string{"created_at", "updated_at"}
 	userPrimaryKeyColumns     = []string{"id"}
 	userGeneratedColumns      = []string{}

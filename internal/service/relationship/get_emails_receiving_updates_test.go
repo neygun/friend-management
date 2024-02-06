@@ -13,6 +13,13 @@ import (
 )
 
 func TestService_GetEmailsReceivingUpdates(t *testing.T) {
+	type mockGetByEmailRepo struct {
+		expCall bool
+		input   string
+		output  model.User
+		err     error
+	}
+
 	type mockGetByCriteriaRepo struct {
 		expCall bool
 		input   model.UserFilter
@@ -30,7 +37,8 @@ func TestService_GetEmailsReceivingUpdates(t *testing.T) {
 
 	type args struct {
 		givenInput                        GetEmailsReceivingUpdatesInput
-		mockGetByCriteriaRepos            []mockGetByCriteriaRepo
+		mockGetByEmailRepo                mockGetByEmailRepo
+		mockGetByCriteriaRepo             mockGetByCriteriaRepo
 		mockGetEmailsReceivingUpdatesRepo mockGetEmailsReceivingUpdatesRepo
 		expRs                             []string
 		expErr                            error
@@ -42,72 +50,46 @@ func TestService_GetEmailsReceivingUpdates(t *testing.T) {
 				Sender: "test1@example.com",
 				Text:   "test test2@example.com",
 			},
-			mockGetByCriteriaRepos: []mockGetByCriteriaRepo{
-				{
-					expCall: true,
-					input: model.UserFilter{
-						Emails: []string{
-							"test1@example.com",
-						},
-					},
-					output: []model.User{},
-				},
-				{
-					expCall: false,
-				},
+			mockGetByEmailRepo: mockGetByEmailRepo{
+				expCall: true,
+				input:   "test1@example.com",
+				output:  model.User{},
 			},
 			expErr: ErrUserNotFound,
 		},
-		"err - 1st GetByCriteria": {
+		"err - GetByEmail": {
 			givenInput: GetEmailsReceivingUpdatesInput{
 				Sender: "test1@example.com",
 				Text:   "test test2@example.com",
 			},
-			mockGetByCriteriaRepos: []mockGetByCriteriaRepo{
-				{
-					expCall: true,
-					input: model.UserFilter{
-						Emails: []string{
-							"test1@example.com",
-						},
-					},
-					err: errors.New("GetByCriteria error"),
-				},
-				{
-					expCall: false,
-				},
+			mockGetByEmailRepo: mockGetByEmailRepo{
+				expCall: true,
+				input:   "test1@example.com",
+				err:     errors.New("GetByEmail error"),
 			},
-			expErr: errors.New("GetByCriteria error"),
+			expErr: errors.New("GetByEmail error"),
 		},
-		"err - 2nd GetByCriteria": {
+		"err - GetByCriteria": {
 			givenInput: GetEmailsReceivingUpdatesInput{
 				Sender: "test1@example.com",
 				Text:   "test test2@example.com",
 			},
-			mockGetByCriteriaRepos: []mockGetByCriteriaRepo{
-				{
-					expCall: true,
-					input: model.UserFilter{
-						Emails: []string{
-							"test1@example.com",
-						},
-					},
-					output: []model.User{
-						{
-							ID:    1,
-							Email: "test1@example.com",
-						},
+			mockGetByEmailRepo: mockGetByEmailRepo{
+				expCall: true,
+				input:   "test1@example.com",
+				output: model.User{
+					ID:    1,
+					Email: "test1@example.com",
+				},
+			},
+			mockGetByCriteriaRepo: mockGetByCriteriaRepo{
+				expCall: true,
+				input: model.UserFilter{
+					Emails: []string{
+						"test2@example.com",
 					},
 				},
-				{
-					expCall: true,
-					input: model.UserFilter{
-						Emails: []string{
-							"test2@example.com",
-						},
-					},
-					err: errors.New("GetByCriteria error"),
-				},
+				err: errors.New("GetByCriteria error"),
 			},
 			expErr: errors.New("GetByCriteria error"),
 		},
@@ -116,33 +98,25 @@ func TestService_GetEmailsReceivingUpdates(t *testing.T) {
 				Sender: "test1@example.com",
 				Text:   "test test2@example.com",
 			},
-			mockGetByCriteriaRepos: []mockGetByCriteriaRepo{
-				{
-					expCall: true,
-					input: model.UserFilter{
-						Emails: []string{
-							"test1@example.com",
-						},
-					},
-					output: []model.User{
-						{
-							ID:    1,
-							Email: "test1@example.com",
-						},
+			mockGetByEmailRepo: mockGetByEmailRepo{
+				expCall: true,
+				input:   "test1@example.com",
+				output: model.User{
+					ID:    1,
+					Email: "test1@example.com",
+				},
+			},
+			mockGetByCriteriaRepo: mockGetByCriteriaRepo{
+				expCall: true,
+				input: model.UserFilter{
+					Emails: []string{
+						"test2@example.com",
 					},
 				},
-				{
-					expCall: true,
-					input: model.UserFilter{
-						Emails: []string{
-							"test2@example.com",
-						},
-					},
-					output: []model.User{
-						{
-							ID:    2,
-							Email: "test2@example.com",
-						},
+				output: []model.User{
+					{
+						ID:    2,
+						Email: "test2@example.com",
 					},
 				},
 			},
@@ -159,33 +133,25 @@ func TestService_GetEmailsReceivingUpdates(t *testing.T) {
 				Sender: "test1@example.com",
 				Text:   "test test2@example.com",
 			},
-			mockGetByCriteriaRepos: []mockGetByCriteriaRepo{
-				{
-					expCall: true,
-					input: model.UserFilter{
-						Emails: []string{
-							"test1@example.com",
-						},
-					},
-					output: []model.User{
-						{
-							ID:    1,
-							Email: "test1@example.com",
-						},
+			mockGetByEmailRepo: mockGetByEmailRepo{
+				expCall: true,
+				input:   "test1@example.com",
+				output: model.User{
+					ID:    1,
+					Email: "test1@example.com",
+				},
+			},
+			mockGetByCriteriaRepo: mockGetByCriteriaRepo{
+				expCall: true,
+				input: model.UserFilter{
+					Emails: []string{
+						"test2@example.com",
 					},
 				},
-				{
-					expCall: true,
-					input: model.UserFilter{
-						Emails: []string{
-							"test2@example.com",
-						},
-					},
-					output: []model.User{
-						{
-							ID:    2,
-							Email: "test2@example.com",
-						},
+				output: []model.User{
+					{
+						ID:    2,
+						Email: "test2@example.com",
 					},
 				},
 			},
@@ -214,15 +180,15 @@ func TestService_GetEmailsReceivingUpdates(t *testing.T) {
 			mockUserRepo := user.NewMockRepository(t)
 			mockRelationshipRepo := relationship.NewMockRepository(t)
 
-			if tc.mockGetByCriteriaRepos[0].expCall {
+			if tc.mockGetByEmailRepo.expCall {
 				mockUserRepo.ExpectedCalls = []*mock.Call{
-					mockUserRepo.On("GetByCriteria", ctx, tc.mockGetByCriteriaRepos[0].input).Return(tc.mockGetByCriteriaRepos[0].output, tc.mockGetByCriteriaRepos[0].err),
+					mockUserRepo.On("GetByEmail", ctx, tc.mockGetByEmailRepo.input).Return(tc.mockGetByEmailRepo.output, tc.mockGetByEmailRepo.err),
 				}
 			}
 
-			if tc.mockGetByCriteriaRepos[1].expCall {
+			if tc.mockGetByCriteriaRepo.expCall {
 				mockUserRepo.ExpectedCalls = append(mockUserRepo.ExpectedCalls,
-					mockUserRepo.On("GetByCriteria", ctx, tc.mockGetByCriteriaRepos[1].input).Return(tc.mockGetByCriteriaRepos[1].output, tc.mockGetByCriteriaRepos[1].err),
+					mockUserRepo.On("GetByCriteria", ctx, tc.mockGetByCriteriaRepo.input).Return(tc.mockGetByCriteriaRepo.output, tc.mockGetByCriteriaRepo.err),
 				)
 			}
 
